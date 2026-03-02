@@ -1,0 +1,59 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Historique des Activités - MindAudit{% endblock %}
+
+{% block body %}
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📜 Historique des Activités</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Journal des événements</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Entreprise</th>
+                            <th>Auteur / IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for historique in historiques %}
+                        <tr>
+                            <td>{{ historique.dateAction|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <span class="badge badge-{{ historique.typeAction == 'VALIDATION' ? 'success' : (historique.typeAction == 'REJET' ? 'danger' : 'info') }}">
+                                    {{ historique.typeAction }}
+                                </span>
+                            </td>
+                            <td>{{ historique.description }}</td>
+                            <td>
+                                {% if historique.entreprise %}
+                                    <a href="{{ path('app_entreprise_show', {'id': historique.entreprise.id}) }}">
+                                        {{ historique.entreprise.nom }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ historique.auteur }}<br>IP: {{ historique.ipAddress }}</small>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucun historique trouvé.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

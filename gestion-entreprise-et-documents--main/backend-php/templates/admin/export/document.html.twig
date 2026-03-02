@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Fiche Document - {{ document.nom }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0d6efd; padding-bottom: 10px; }
+        .header h1 { color: #0d6efd; margin: 0; }
+        .section { margin-bottom: 20px; }
+        .section-title { font-size: 16px; font-weight: bold; color: #555; border-bottom: 1px solid #ddd; margin-bottom: 10px; padding-bottom: 5px; }
+        .row { margin-bottom: 8px; }
+        .label { font-weight: bold; width: 150px; display: inline-block; }
+        .value { display: inline-block; }
+        .badge { background-color: #f8f9fa; border: 1px solid #ddd; padding: 2px 5px; border-radius: 4px; font-size: 12px; }
+        .footer { text-align: center; font-size: 10px; color: #999; margin-top: 50px; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ document.nom }}</h1>
+        <p>Type du document: {{ document.type|upper }}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Détails du Document</div>
+        <div class="row">
+            <span class="label">Statut :</span>
+            <span class="value">{{ document.statut|replace({'_': ' '})|capitalize }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Date d'upload :</span>
+            <span class="value">{{ document.dateUpload ? document.dateUpload|date('d/m/Y H:i') : 'N/A' }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Téléchargé par (ID) :</span>
+            <span class="value">{{ document.uploadedBy }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Entreprise Associée</div>
+        <div class="row">
+            <span class="label">Nom :</span>
+            <span class="value">{{ document.entreprise ? document.entreprise.nom : 'Non assigné' }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Matricule :</span>
+            <span class="value">{{ document.entreprise ? document.entreprise.matriculeFiscale : '-' }}</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Généré par MindAudit le {{ "now"|date("d/m/Y à H:i") }}</p>
+        {% if document.url %}
+        <p>Le fichier lié est disponible sur le serveur.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Documents{% endblock %}
+
+{% block body %}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gestion des Docs</h1>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filtres de recherche</h6>
+        </div>
+        <div class="card-body">
+            <form id="searchForm" class="form-row">
+                <div class="col-md-3 mb-2">
+                    <input type="text" id="Nom" name="nom" class="form-control" placeholder="Nom du document...">
+                </div>
+                <div class="col-md-3 mb-2">
+                    <input type="text" id="Entreprise" name="entreprise" class="form-control" placeholder="Entreprise...">
+                </div>
+                <div class="col-md-2 mb-2">
+                     <select id="Type" name="type" class="form-control">
+                        <option value="">Tous les types</option>
+                        <option value="ISO">ISO</option>
+                        <option value="fiscal">Fiscal</option>
+                        <option value="RH">RH</option>
+                        <option value="financier">Financier</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <select id="Statut" name="statut" class="form-control">
+                        <option value="">Tous statuts</option>
+                        <option value="en_attente">En attente</option>
+                        <option value="valide">Validé</option>
+                        <option value="rejete">Rejeté</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <button type="button" id="resetBtn" class="btn btn-secondary btn-block" title="Réinitialiser">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Bibliothèque de fichiers</h6>
+            <div id="loadingSpinner" style="display: none;" class="text-primary">
+                <i class="fas fa-spinner fa-spin"></i> Chargement...
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="resultsContainer" class="table-responsive">
+                {{ include('admin/document/_table.html.twig') }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('searchForm');
+            const inputs = form.querySelectorAll('input, select');
+            const container = document.getElementById('resultsContainer');
+            const spinner = document.getElementById('loadingSpinner');
+            const resetBtn = document.getElementById('resetBtn');
+
+            function performSearch() {
+                spinner.style.display = 'block';
+                const params = new URLSearchParams(new FormData(form));
+                
+                fetch(`{{ path('app_document_search') }}?${params.toString()}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    spinner.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    spinner.style.display = 'none';
+                });
+            }
+
+            let timeout = null;
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(performSearch, 300);
+                });
+            });
+
+            resetBtn.addEventListener('click', () => {
+                form.reset();
+                performSearch();
+            });
+        });
+    </script>
+{% endblock %}
+

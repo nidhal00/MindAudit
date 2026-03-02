@@ -1,0 +1,120 @@
+<table class="table table-bordered" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th class="sortable-header" data-sort="nom">
+                Nom 
+                {% if currentSort|default('nom') == 'nom' %}
+                    <i class="fas fa-sort-{{ currentOrder|default('ASC') == 'ASC' ? 'up' : 'down' }}"></i>
+                {% else %}
+                    <i class="fas fa-sort text-muted"></i>
+                {% endif %}
+            </th>
+            <th>Matricule</th>
+            <th class="sortable-header" data-sort="secteur">
+                Secteur / Pays 
+                {% if currentSort|default('nom') == 'secteur' %}
+                    <i class="fas fa-sort-{{ currentOrder|default('ASC') == 'ASC' ? 'up' : 'down' }}"></i>
+                {% else %}
+                    <i class="fas fa-sort text-muted"></i>
+                {% endif %}
+            </th>
+            <th class="sortable-header" data-sort="taille">
+                Type 
+                {% if currentSort|default('nom') == 'taille' %}
+                    <i class="fas fa-sort-{{ currentOrder|default('ASC') == 'ASC' ? 'up' : 'down' }}"></i>
+                {% else %}
+                    <i class="fas fa-sort text-muted"></i>
+                {% endif %}
+            </th>
+            <th class="sortable-header" data-sort="statut">
+                Statut 
+                {% if currentSort|default('nom') == 'statut' %}
+                    <i class="fas fa-sort-{{ currentOrder|default('ASC') == 'ASC' ? 'up' : 'down' }}"></i>
+                {% else %}
+                    <i class="fas fa-sort text-muted"></i>
+                {% endif %}
+            </th>
+            <th class="sortable-header" data-sort="dateCreation">
+                Date Création 
+                {% if currentSort|default('nom') == 'dateCreation' %}
+                    <i class="fas fa-sort-{{ currentOrder|default('ASC') == 'ASC' ? 'up' : 'down' }}"></i>
+                {% else %}
+                    <i class="fas fa-sort text-muted"></i>
+                {% endif %}
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th>Nom</th>
+            <th>Matricule</th>
+            <th>Secteur / Pays</th>
+            <th>Type</th>
+            <th>Statut</th>
+            <th>Date Création</th>
+            <th>Actions</th>
+        </tr>
+    </tfoot>
+    <tbody>
+    {% for entreprise in entreprises %}
+        <tr>
+            <td>
+                <div class="font-weight-bold">{{ entreprise.nom }}</div>
+                <div class="small text-muted">{{ entreprise.email }}</div>
+            </td>
+            <td>
+                <code>{{ entreprise.matriculeFiscale }}</code>
+            </td>
+            <td>
+                <div>{{ entreprise.secteur }}</div>
+                <div class="small text-muted">{{ entreprise.pays }}</div>
+            </td>
+            <td>
+                {% set badgeClass = 'secondary' %}
+                {% if entreprise.taille == 'large' %}
+                    {% set badgeClass = 'primary' %}
+                {% elseif entreprise.taille == 'medium' %}
+                    {% set badgeClass = 'info' %}
+                {% endif %}
+                <span class="badge badge-{{ badgeClass }}">{{ entreprise.taille }}</span>
+            </td>
+            <td>
+                {% set statusClass = 'secondary' %}
+                {% if entreprise.statut == 'valide' %}
+                    {% set statusClass = 'success' %}
+                {% elseif entreprise.statut == 'rejete' %}
+                    {% set statusClass = 'danger' %}
+                {% elseif entreprise.statut == 'en_attente' %}
+                    {% set statusClass = 'warning' %}
+                {% endif %}
+                <span class="badge badge-{{ statusClass }}">
+                    {{ entreprise.statut|replace({'_': ' '})|capitalize }}
+                </span>
+            </td>
+            <td>
+                {{ entreprise.dateCreation ? entreprise.dateCreation|date('d/m/Y') : '-' }}
+            </td>
+            <td>
+                <a href="{{ path('app_entreprise_show', {'id': entreprise.id}) }}" class="btn btn-info btn-circle btn-sm" title="Voir">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{{ path('app_entreprise_edit', {'id': entreprise.id}) }}" class="btn btn-warning btn-circle btn-sm" title="Modifier">
+                    <i class="fas fa-pen"></i>
+                </a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7" class="text-center py-4">
+                <i class="fas fa-folder-open fa-3x text-gray-300 mb-3"></i>
+                <p class="text-gray-500 mb-0">Aucune entreprise trouvée.</p>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-center mt-3">
+    {{ knp_pagination_render(entreprises) }}
+</div>

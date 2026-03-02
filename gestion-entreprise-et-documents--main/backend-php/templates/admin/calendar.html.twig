@@ -1,0 +1,67 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Calendrier des Audits - MindAudit{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #calendar {
+            max-width: 1100px;
+            margin: 0 auto;
+            min-height: 600px;
+        }
+        .fc-event {
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📅 Calendrier des Audits</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Planning Global</h6>
+        </div>
+        <div class="card-body">
+            <div id='calendar'></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+                buttonText: {
+                    today: 'Aujourd\'hui',
+                    month: 'Mois',
+                    week: 'Semaine',
+                    list: 'Liste'
+                },
+                events: "{{ path('app_admin_calendar_api') }}",
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.open(info.event.url, "_self");
+                        info.jsEvent.preventDefault();
+                    }
+                },
+                editable: false, // Set to true if implementing drag & drop API
+                droppable: false
+            });
+            calendar.render();
+        });
+    </script>
+{% endblock %}

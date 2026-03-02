@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MindAudit | Intelligence Artificielle au Service de vos Audits{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <header class="container">
+        <nav class="glass" style="margin-top: 1.5rem; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div class="logo" style="font-size: 1.5rem; font-weight: 900; background: linear-gradient(to right, #818cf8, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <a href="{{ path('app_admin_dashboard') }}" style="text-decoration: none; color: inherit;">
+                    <i class="fa-solid fa-atom me-2"></i> MINDAUDIT
+                </a>
+            </div>
+            <div class="nav-links" style="display: flex; gap: 2rem;">
+                <!-- Navigation adaptative -->
+                <a href="{{ path('app_admin_dashboard') }}" style="color: white; text-decoration: none; font-weight: 500;">Accueil</a>
+                <a href="{{ path('app_entreprise_index') }}" style="color: white; text-decoration: none; font-weight: 500;">Entreprises</a>
+                {% if app.user %}
+                    <a href="{{ path('app_logout') }}" style="color: white; text-decoration: none; font-weight: 500;">Déconnexion</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" style="color: white; text-decoration: none; font-weight: 500;">Connexion</a>
+                {% endif %}
+                <a href="{{ path('app_entreprise_new') }}" class="btn btn-primary" style="padding: 0.5rem 1rem;">Inscription</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="glass" style="padding: 1rem; margin: 1rem 0; border-left: 4px solid var(--{{ label == 'error' ? 'accent' : 'secondary' }});">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="container" style="padding: 4rem 0; border-top: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
+        <p>&copy; 2026 MindAudit Platform. Design avec passion pour l'excellence.</p>
+    </footer>
+
+    <script src="{{ asset('assets/js/main.js') }}"></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

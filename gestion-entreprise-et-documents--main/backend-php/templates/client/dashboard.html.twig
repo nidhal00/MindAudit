@@ -1,0 +1,385 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Tableau de bord - {{ entreprise.nom }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">🚀 Espace Client - {{ entreprise.nom }}</h1>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-left-primary py-2">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="m-0 font-weight-bold text-primary">Actions Rapides</h5>
+                    </div>
+                    <div>
+                        <a href="{{ path('app_employee_download_pdf') }}" class="btn btn-primary btn-icon-split mr-2">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-file-pdf"></i>
+                            </span>
+                            <span class="text">Télécharger PDF</span>
+                        </a>
+
+                        <button type="button" class="btn btn-info btn-icon-split mr-2" data-bs-toggle="modal" data-bs-target="#qrCodeModal">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-qrcode"></i>
+                            </span>
+                            <span class="text">Mon QR Code</span>
+                        </button>
+
+                        <a href="{{ path('app_employee_logout') }}" class="btn btn-danger btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </span>
+                            <span class="text">Déconnexion</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Info Card -->
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Informations de l'entreprise</h6>
+                    <div>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editModal">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-building text-primary mr-2"></i> Nom:</strong><br> {{ entreprise.nom }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-hashtag text-primary mr-2"></i> Matricule Fiscal:</strong><br> {{ entreprise.matriculeFiscale }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-envelope text-primary mr-2"></i> Email:</strong><br> {{ entreprise.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-phone text-primary mr-2"></i> Téléphone:</strong><br> {{ entreprise.telephone|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong><i class="fas fa-map-marker-alt text-primary mr-2"></i> Adresse:</strong><br> {{ entreprise.adresse|default('-') }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Statut:</strong> 
+                            <span class="badge badge-success">Validée</span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Documents:</strong> {{ documents|length }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Rating:</strong> 
+                            {% if entreprise.rating %}
+                                <span class="text-warning">
+                                    {% for i in 1..5 %}
+                                        <i class="fas fa-star{% if i > entreprise.rating %}-o text-muted{% endif %}"></i>
+                                    {% endfor %}
+                                </span>
+                            {% else %}
+                                -/5
+                            {% endif %}
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Vos Documents</h6>
+            <a href="{{ path('app_employee_upload') }}" class="btn btn-sm btn-success shadow-sm">
+                <i class="fas fa-plus fa-sm text-white-50"></i> Ajouter un document
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Type</th>
+                            <th>Date d'ajout</th>
+                            <th>Score IA</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                            <tr>
+                                <td>{{ doc.nom }}</td>
+                                <td>{{ doc.type }}</td>
+                                <td>{{ doc.dateUpload|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    {% if doc.noteIA is not null %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 mr-2" style="height: 20px;">
+                                                <div class="progress-bar {% if doc.noteIA >= 70 %}bg-success{% elseif doc.noteIA >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ doc.noteIA }}%">
+                                                    {{ doc.noteIA }}%
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-circle btn-info ai-details-btn" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#aiModal"
+                                                    data-nom="{{ doc.nom }}"
+                                                    data-score="{{ doc.noteIA }}"
+                                                    data-details="{{ doc.analysisReport.details|default([])|json_encode }}">
+                                                <i class="fas fa-info"></i>
+                                            </button>
+                                            
+                                            <a href="{{ path('app_employee_audit_report', {'id': doc.id}) }}" 
+                                               class="btn btn-sm btn-circle btn-warning" 
+                                               target="_blank"
+                                               title="Télécharger le Rapport Certifié">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted small">En cours d'analyse...</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set badgeClass = 'secondary' %}
+                                    {% if doc.statut == 'valide' %}
+                                        {% set badgeClass = 'success' %}
+                                    {% elseif doc.statut == 'rejete' %}
+                                        {% set badgeClass = 'danger' %}
+                                    {% elseif doc.statut == 'en_attente' %}
+                                        {% set badgeClass = 'warning' %}
+                                    {% endif %}
+                                    
+                                    <span class="badge badge-{{ badgeClass }}">
+                                        {{ doc.statut|capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">Aucun document téléchargé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="editModalLabel">
+                    <i class="fas fa-edit"></i> Modifier les Informations
+                </h5>
+                <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{ path('app_employee_edit_entreprise') }}">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Vous pouvez modifier uniquement votre email, téléphone et adresse.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ entreprise.email }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telephone"><i class="fas fa-phone"></i> Téléphone</label>
+                        <input type="text" class="form-control" id="telephone" name="telephone" 
+                               value="{{ entreprise.telephone }}" placeholder="+216 XX XXX XXX">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adresse"><i class="fas fa-map-marker-alt"></i> Adresse</label>
+                        <textarea class="form-control" id="adresse" name="adresse" rows="3">{{ entreprise.adresse }}</textarea>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>Non modifiable :</strong> Nom ({{ entreprise.nom }}), Matricule Fiscal ({{ entreprise.matriculeFiscale }})
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> Confirmer la Suppression
+                </h5>
+                <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{ path('app_employee_delete_entreprise') }}">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> <strong>Attention !</strong> Cette action est irréversible.
+                    </div>
+                    
+                    <p class="mb-3">Vous êtes sur le point de supprimer votre compte entreprise :</p>
+                    <ul>
+                        <li><strong>Entreprise :</strong> {{ entreprise.nom }}</li>
+                        <li><strong>Matricule :</strong> {{ entreprise.matriculeFiscale }}</li>
+                        <li><strong>Documents :</strong> {{ documents|length }} document(s) seront également supprimés</li>
+                    </ul>
+                    
+                    <p class="text-danger font-weight-bold">
+                        Êtes-vous sûr de vouloir continuer ?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Supprimer Définitivement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- AI Details Modal -->
+<div class="modal fade" id="aiModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-robot"></i> Analyse IA : <span id="aiModalTitle"></span></h5>
+                <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="h1 font-weight-bold" id="aiModalScore"></div>
+                    <div>Score de Conformité</div>
+                </div>
+                <h5>Détails de l'analyse :</h5>
+                <ul id="aiModalDetails" class="list-group list-group-flush">
+                    <!-- JS will populate this -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-qrcode"></i> Mon Code QR</h5>
+                <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                {% if qrCode %}
+                    <img src="{{ qrCode }}" alt="QR Code" class="img-fluid mb-3" style="max-width: 250px;">
+                {% else %}
+                    <div class="alert alert-warning">QR Code indisponible</div>
+                {% endif %}
+                <p>Scannez ce code pour vérifier l'authenticité de votre entreprise.</p>
+                <div class="bg-light p-2 rounded mb-3 border">
+                    <code class="h4 text-primary m-0">{{ entreprise.accessCode }}</code>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const aiButtons = document.querySelectorAll('.ai-details-btn');
+        aiButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const nom = this.dataset.nom;
+                const score = this.dataset.score;
+                // Parse potentially empty or null details safely
+                let details = [];
+                try {
+                    details = JSON.parse(this.dataset.details || '[]');
+                } catch (e) {
+                    console.error('Error parsing details', e);
+                }
+                
+                document.getElementById('aiModalTitle').textContent = nom;
+                
+                const scoreEl = document.getElementById('aiModalScore');
+                scoreEl.textContent = score + '%';
+                scoreEl.className = 'h1 font-weight-bold ' + (score >= 70 ? 'text-success' : (score >= 40 ? 'text-warning' : 'text-danger'));
+                
+                const list = document.getElementById('aiModalDetails');
+                list.innerHTML = '';
+                
+                if (!details || details.length === 0) {
+                    list.innerHTML = '<li class="list-group-item text-muted">Aucun détail disponible.</li>';
+                } else {
+                    details.forEach(det => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.innerHTML = '<i class="fas fa-check text-success mr-2"></i>' + det;
+                        list.appendChild(li);
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

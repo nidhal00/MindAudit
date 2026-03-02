@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="MindAudit - Plateforme d'Audit et de Gestion de Conformité" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <title>{% block title %}Business | MindAudit{% endblock %}</title>
+
+    <link rel="shortcut icon" href="{{ asset('assets/frontend-php/assets/images/favicon.svg') }}" type="image/svg" />
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" href="{{ asset('assets/frontend-php/assets/css/bootstrap.min.css') }}" />
+    <!-- Line Icons css -->
+    <link rel="stylesheet" href="{{ asset('assets/frontend-php/assets/css/lineicons.css') }}" />
+    <!-- Tiny Slider css -->
+    <link rel="stylesheet" href="{{ asset('assets/frontend-php/assets/css/tiny-slider.css') }}" />
+    <!-- gLightBox css -->
+    <link rel="stylesheet" href="{{ asset('assets/frontend-php/assets/css/glightbox.min.css') }}" />
+
+    <link rel="stylesheet" href="{{ asset('assets/frontend-php/style.css') }}" />
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- NAVBAR NINE PART START -->
+    <section class="navbar-area navbar-nine">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <nav class="navbar navbar-expand-lg">
+                        <a class="navbar-brand" href="{{ path('app_front_home') }}">
+                            <img src="{{ asset('assets/frontend-php/assets/images/white-logo.svg') }}" alt="Logo" />
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNine"
+                            aria-controls="navbarNine" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="toggler-icon"></span>
+                            <span class="toggler-icon"></span>
+                            <span class="toggler-icon"></span>
+                        </button>
+
+                        <div class="collapse navbar-collapse sub-menu-bar" id="navbarNine">
+                            <ul class="navbar-nav me-auto">
+                                <li class="nav-item">
+                                    <a class="{{ app.request.get('_route') == 'app_front_home' ? 'active' : '' }}" href="{{ path('app_front_home') }}">Accueil</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="{{ app.request.get('_route') == 'app_front_annuaire' ? 'active' : '' }}" href="{{ path('app_front_annuaire') }}">Annuaire</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="{{ app.request.get('_route') starts with 'app_employee' or app.request.get('_route') == 'app_front_register' or app.request.get('_route') == 'app_front_espace_entreprise' ? 'active' : '' }}" 
+                                       href="{{ path('app_front_espace_entreprise') }}">
+                                        <i class="lni lni-user"></i> Espace Entreprise
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ path('app_admin_dashboard') }}">
+                                        <i class="lni lni-lock"></i> Admin
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="navbar-btn d-none d-lg-inline-block">
+                            <a class="menu-bar" href="#side-menu-left"><i class="lni lni-menu"></i></a>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- NAVBAR NINE PART ENDS -->
+
+    <!-- SIDEBAR PART START -->
+    <div class="sidebar-left">
+        <div class="sidebar-close">
+            <a class="close" href="#close"><i class="lni lni-close"></i></a>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-logo">
+                <a href="{{ path('app_front_home') }}"><img src="{{ asset('assets/frontend-php/assets/images/logo.svg') }}" alt="Logo" /></a>
+            </div>
+            <p class="text">MindAudit : Votre partenaire pour une conformité simplifiée et des audits performants.</p>
+            <div class="sidebar-menu">
+                <h5 class="menu-title">Connexion</h5>
+                <ul>
+                    <li><a href="{{ path('app_front_register') }}">Inscription Entreprise</a></li>
+                    <li><a href="{{ path('app_employee_login') }}">Espace Entreprise</a></li>
+                    <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-social align-items-center justify-content-center">
+                <h5 class="social-title">Suivez-nous</h5>
+                <ul>
+                    <li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
+                    <li><a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a></li>
+                    <li><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a></li>
+                    <li><a href="javascript:void(0)"><i class="lni lni-youtube"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="overlay-left"></div>
+    <!-- SIDEBAR PART ENDS -->
+
+    <div class="container mt-4">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    {% block body %}{% endblock %}
+
+    <!-- Start Footer Area -->
+    <footer class="footer-area footer-eleven">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="footer-widget f-about">
+                            <div class="logo">
+                                <a href="{{ path('app_front_home') }}">
+                                    <img src="{{ asset('assets/frontend-php/assets/images/logo.svg') }}" alt="#" class="img-fluid" />
+                                </a>
+                            </div>
+                            <p class="text">Simplifiez vos audits et garantissez la conformité de vos documents avec l'IA.</p>
+                            <p class="copyright-text">
+                                <span>© {{ "now"|date("Y") }} MindAudit. Conçu par Ayro UI & Adapté.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-12">
+                        <div class="footer-widget f-link">
+                            <h5>Navigation</h5>
+                            <ul>
+                                <li><a href="{{ path('app_front_home') }}">Accueil</a></li>
+                                <li><a href="{{ path('app_employee_login') }}">Connexion Entreprise</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-12">
+                        <div class="footer-widget f-link">
+                            <h5>Portail</h5>
+                            <ul>
+                                <li><a href="{{ path('app_front_register') }}">Inscription</a></li>
+                                <li><a href="{{ path('app_admin_dashboard') }}">Espace Admin</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!--/ End Footer Area -->
+
+    <!-- Bootstrap js -->
+    <script src="{{ asset('assets/frontend-php/assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/frontend-php/assets/js/glightbox.min.js') }}"></script>
+    <script src="{{ asset('assets/frontend-php/assets/js/main.js') }}"></script>
+    <script src="{{ asset('assets/frontend-php/assets/js/tiny-slider.js') }}"></script>
+
+    {% block javascripts %}{% endblock %}
+
+</body>
+
+</html>

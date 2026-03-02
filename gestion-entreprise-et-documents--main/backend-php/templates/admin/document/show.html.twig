@@ -1,0 +1,158 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails Document{% endblock %}
+
+{% block body %}
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📄 {{ document.nom }}</h1>
+        <a href="{{ path('app_document_index') }}" class="btn btn-secondary btn-icon-split btn-sm">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+            </span>
+            <span class="text">Retour à la liste</span>
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Informations Fichier</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light w-25">Nom du fichier</th>
+                                    <td>
+                                        {{ document.nom }}
+                                        {% if document.url %}
+                                            <a href="{{ asset('uploads/documents/' ~ document.url) }}" target="_blank" class="ml-2 btn btn-sm btn-primary btn-icon-split">
+                                                <span class="icon text-white-50"><i class="fas fa-download"></i></span>
+                                                <span class="text">Télécharger</span>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Type Document</th>
+                                    <td><code>{{ document.type }}</code></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Statut</th>
+                                    <td>
+                                        {% set statusClass = 'secondary' %}
+                                        {% if document.statut == 'valide' %}
+                                            {% set statusClass = 'success' %}
+                                        {% elseif document.statut == 'rejete' %}
+                                            {% set statusClass = 'danger' %}
+                                        {% elseif document.statut == 'en_attente' %}
+                                            {% set statusClass = 'warning' %}
+                                        {% endif %}
+                                        <span class="badge badge-{{ statusClass }}">
+                                            {{ document.statut|replace({'_': ' '})|capitalize }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Date Upload</th>
+                                    <td>{{ document.dateUpload ? document.dateUpload|date('d/m/Y H:i') : '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Conformité IA</th>
+                                    <td>
+                                        {% if document.noteIA is not null %}
+                                             {% set barClass = 'success' %}
+                                            {% if document.noteIA < 50 %}
+                                                {% set barClass = 'danger' %}
+                                            {% elseif document.noteIA < 75 %}
+                                                {% set barClass = 'warning' %}
+                                            {% endif %}
+                                            
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ document.noteIA }}%</div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2" style="width: 200px;">
+                                                        <div class="progress-bar bg-{{ barClass }}" role="progressbar" style="width: {{ document.noteIA }}%" aria-valuenow="{{ document.noteIA }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted font-italic">Non analysé</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+                </div>
+                <div class="card-body">
+
+                    {% if document.statut == 'en_attente' %}
+                        <!-- AI Recommendation -->
+                        <div class="alert alert-info border-left-info shadow-sm mb-4">
+                             <h6 class="font-weight-bold"><i class="fas fa-robot mr-2"></i> Avis IA</h6>
+                             <hr>
+                             <p class="small mb-0">
+                                {% if document.noteIA < 50 %}
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> Risque élevé. Rejet conseillé.
+                                {% elseif document.noteIA < 75 %}
+                                    <i class="fas fa-info-circle mr-1"></i> Conformité moyenne. À vérifier.
+                                {% else %}
+                                    <i class="fas fa-check-circle mr-1"></i> Conforme. Validation conseillée.
+                                {% endif %}
+                             </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <form method="post" action="{{ path('app_document_validate', {'id': document.id}) }}" onsubmit="return confirm('Valider ce document ?');" class="mb-2">
+                                <input type="hidden" name="_token" value="{{ csrf_token('validate' ~ document.id) }}">
+                                <button class="btn btn-success btn-block icon-split align-items-center justify-content-start p-0">
+                                    <span class="icon text-white-50"><i class="fas fa-check"></i></span>
+                                    <span class="text">Valider</span>
+                                </button>
+                            </form>
+                            
+                            <form method="post" action="{{ path('app_document_reject', {'id': document.id}) }}" onsubmit="return confirm('Rejeter ce document ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ document.id) }}">
+                                <div class="form-group mb-2">
+                                    <textarea name="commentaire" class="form-control form-control-sm" rows="2" required placeholder="Motif du rejet..."></textarea>
+                                </div>
+                                <button class="btn btn-danger btn-block icon-split align-items-center justify-content-start p-0">
+                                    <span class="icon text-white-50"><i class="fas fa-times"></i></span>
+                                    <span class="text">Rejeter</span>
+                                </button>
+                            </form>
+                        </div>
+                        <hr>
+                    {% endif %}
+
+                    <div class="d-flex flex-column gap-2">
+                         <a href="{{ path('app_document_pdf', {'id': document.id}) }}" class="btn btn-info btn-icon-split mb-2" target="_blank">
+                             <span class="icon text-white-50"><i class="fas fa-file-pdf"></i></span>
+                             <span class="text text-left w-100">Générer PDF</span>
+                        </a>
+
+                        <a href="{{ path('app_document_edit', {'id': document.id}) }}" class="btn btn-primary btn-icon-split mb-2">
+                            <span class="icon text-white-50"><i class="fas fa-pen"></i></span>
+                            <span class="text text-left w-100">Modifier</span>
+                        </a>
+                        
+                        {{ include('document/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

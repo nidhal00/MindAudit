@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_entreprise_delete', {'id': entreprise.id}) }}" style="display:inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entreprise.id) }}">
+    <button class="btn btn-danger btn-circle btn-sm" title="Supprimer">
+        <i class="fas fa-trash"></i>
+    </button>
+</form>

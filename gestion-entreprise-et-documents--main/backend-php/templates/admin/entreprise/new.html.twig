@@ -1,0 +1,31 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouvelle Entreprise{% endblock %}
+
+{% block body %}
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Nouvelle Entreprise</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Formulaire d'inscription</h6>
+                </div>
+                <div class="card-body">
+                    {{ include('admin/entreprise/_form.html.twig', {'button_label': 'Créer l\'entreprise'}) }}
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="{{ path('app_entreprise_index') }}" class="btn btn-secondary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="text">Retour à la liste</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

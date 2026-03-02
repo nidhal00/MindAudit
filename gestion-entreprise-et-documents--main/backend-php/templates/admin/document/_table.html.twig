@@ -1,0 +1,77 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Entreprise</th>
+            <th>Type</th>
+            <th>Note IA</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for document in documents %}
+        <tr>
+            <td>{{ document.nom }}</td>
+            <td>{{ document.entreprise.nom }}</td>
+            <td>{{ document.type }}</td>
+            <td>
+                {% if document.noteIA is not null %}
+                    {{ document.noteIA }}%
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>
+                <span class="badge badge-{{ document.statut == 'valide' ? 'success' : (document.statut == 'rejete' ? 'danger' : 'warning') }}">
+                    {{ document.statut|capitalize }}
+                </span>
+            </td>
+            <td>
+                <a href="{{ path('app_document_show', {id: document.id}) }}" class="btn btn-info btn-circle btn-sm">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <form method="post" action="{{ path('app_document_delete', {id: document.id}) }}" style="display:inline-block" onsubmit="return confirm('Supprimer ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ document.id) }}">
+                    <button class="btn btn-danger btn-circle btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="6" class="text-center">Aucun document</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if totalPages > 1 %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-3">
+        {% if currentPage > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path('app_document_index', {'page': currentPage - 1}) }}">Précédent</a>
+            </li>
+        {% endif %}
+        
+        {% for page in 1..totalPages %}
+            {% if page == currentPage %}
+                <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+            {% elseif page == 1 or page == totalPages or (page >= currentPage - 2 and page <= currentPage + 2) %}
+                <li class="page-item"><a class="page-link" href="{{ path('app_document_index', {'page': page}) }}">{{ page }}</a></li>
+            {% elseif page == currentPage - 3 or page == currentPage + 3 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if currentPage < totalPages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path('app_document_index', {'page': currentPage + 1}) }}">Suivant</a>
+            </li>
+        {% endif %}
+    </ul>
+    <p class="text-center text-muted">Page {{ currentPage }} sur {{ totalPages }} ({{ totalItems }} documents)</p>
+</nav>
+{% endif %}

@@ -1,0 +1,124 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Upload Document - MindAudit{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ajouter un document pour {{ entreprise.nom }}</h6>
+                </div>
+                <div class="card-body" id="upload-container">
+                    {{ form_start(form, {'attr': {'id': 'upload-form', 'novalidate': 'novalidate'}}) }}
+                        {{ form_widget(form) }}
+                        <hr>
+                        
+                        <!-- Progress Bar (Hidden by default) -->
+                        <div id="progress-container" class="mb-4" style="display: none;">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-xs font-weight-bold text-primary text-uppercase">Analyse IA en cours...</span>
+                                <span id="progress-percent" class="text-xs font-weight-bold text-primary">0%</span>
+                            </div>
+                            <div class="progress progress-sm">
+                                <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Result Area (Hidden by default) -->
+                        <div id="result-area" class="alert alert-success shadow-sm mb-4" style="display: none;">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <div class="icon-circle bg-success text-white">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500" id="result-date"></div>
+                                    <span class="font-weight-bold" id="result-message"></span>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 mt-1">Score IA : <span id="result-score"></span>/100</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="form-actions">
+                            <button type="submit" class="btn btn-success btn-icon-split border-0 shadow-sm" id="submit-btn" style="border-radius: 30px; padding: 0.5rem 1.5rem;">
+                                <span class="text">LANCER L'ANALYSE IA</span>
+                            </button>
+                            <a href="{{ path('app_employee_dashboard') }}" class="btn btn-light btn-icon-split ml-2 border-0 shadow-sm" style="border-radius: 30px; padding: 0.5rem 1.5rem;">
+                                 <span class="text">Retour</span>
+                            </a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('upload-form');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercent = document.getElementById('progress-percent');
+    const resultArea = document.getElementById('result-area');
+    const submitBtn = document.getElementById('submit-btn');
+    const formActions = document.getElementById('form-actions');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const xhr = new XMLHttpRequest();
+
+        // Show progress UI
+        submitBtn.disabled = true;
+        progressContainer.style.display = 'block';
+        resultArea.style.display = 'none';
+
+        xhr.open('POST', '{{ path("api_document_upload") }}', true);
+
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = percent + '%';
+                progressPercent.innerText = percent + '%';
+            }
+        };
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const res = JSON.parse(xhr.responseText);
+                
+                // Update result UI
+                document.getElementById('result-message').innerText = res.message;
+                document.getElementById('result-score').innerText = res.score;
+                document.getElementById('result-date').innerText = res.date;
+                
+                resultArea.style.display = 'block';
+                progressContainer.style.display = 'none';
+                
+                // Reset form optionally or redirect
+                setTimeout(() => {
+                    window.location.href = '{{ path("app_employee_dashboard") }}';
+                }, 3000);
+            } else {
+                alert('Erreur lors de l\'upload : ' + xhr.statusText);
+                submitBtn.disabled = false;
+            }
+        };
+
+        xhr.onerror = function() {
+            alert('Erreur réseau.');
+            submitBtn.disabled = false;
+        };
+
+        xhr.send(formData);
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
