@@ -1,0 +1,282 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails Entreprise{% endblock %}
+
+{% block body %}
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">🏢 {{ entreprise.nom }}</h1>
+        <a href="{{ path('app_entreprise_index') }}" class="btn btn-secondary btn-icon-split btn-sm">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+            </span>
+            <span class="text">Retour à la liste</span>
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- General Info Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Informations Générales</h6>
+                    {% if entreprise.rating %}
+                        <div class="rating-display">
+                            {% for i in 1..5 %}
+                                <i class="fas fa-star{% if i > entreprise.rating %}-o text-muted{% else %} text-warning{% endif %}"></i>
+                            {% endfor %}
+                            <span class="ml-2 text-muted">({{ entreprise.rating }}/5)</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light w-25">Matricule</th>
+                                    <td><code>{{ entreprise.matriculeFiscale }}</code></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Secteur</th>
+                                    <td>{{ entreprise.secteur }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Taille</th>
+                                    <td>
+                                        {% set badgeClass = 'secondary' %}
+                                        {% if entreprise.taille == 'large' %}
+                                            {% set badgeClass = 'primary' %}
+                                        {% elseif entreprise.taille == 'medium' %}
+                                            {% set badgeClass = 'info' %}
+                                        {% endif %}
+                                        <span class="badge badge-{{ badgeClass }}">{{ entreprise.taille }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Statut</th>
+                                    <td>
+                                        {% set statusClass = 'secondary' %}
+                                        {% if entreprise.statut == 'valide' %}
+                                            {% set statusClass = 'success' %}
+                                        {% elseif entreprise.statut == 'rejete' %}
+                                            {% set statusClass = 'danger' %}
+                                        {% elseif entreprise.statut == 'en_attente' %}
+                                            {% set statusClass = 'warning' %}
+                                        {% endif %}
+                                        <span class="badge badge-{{ statusClass }}">
+                                            {{ entreprise.statut|replace({'_': ' '})|capitalize }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Date Création</th>
+                                    <td>{{ entreprise.dateCreation ? entreprise.dateCreation|date('d/m/Y') : '-' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-file-alt mr-2"></i>Documents ({{ documents|length }})
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if documents|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Type</th>
+                                        <th>Score IA</th>
+                                        <th>Évaluation</th>
+                                        <th>Statut</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doc in documents %}
+                                        <tr>
+                                            <td>{{ doc.nom }}</td>
+                                            <td><span class="badge badge-info">{{ doc.type }}</span></td>
+                                            <td>
+                                                {% if doc.noteIA %}
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar {% if doc.noteIA >= 70 %}bg-success{% elseif doc.noteIA >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                             role="progressbar" 
+                                                             style="width: {{ doc.noteIA }}%">
+                                                            {{ doc.noteIA }}%
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if doc.rating %}
+                                                    {% for i in 1..5 %}
+                                                        <i class="fas fa-star{% if i > doc.rating %}-o text-muted{% else %} text-warning{% endif %}" style="font-size: 0.8rem;"></i>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% set docStatusClass = 'secondary' %}
+                                                {% if doc.statut == 'valide' %}
+                                                    {% set docStatusClass = 'success' %}
+                                                {% elseif doc.statut == 'rejete' %}
+                                                    {% set docStatusClass = 'danger' %}
+                                                {% elseif doc.statut == 'en_attente' %}
+                                                    {% set docStatusClass = 'warning' %}
+                                                {% endif %}
+                                                <span class="badge badge-{{ docStatusClass }}">{{ doc.statut|replace({'_': ' '}) }}</span>
+                                            </td>
+                                            <td>{{ doc.dateUpload|date('d/m/Y') }}</td>
+                                            <td>
+                                                <a href="{{ path('app_document_show', {'id': doc.id}) }}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Aucun document n'a encore été ajouté pour cette entreprise.
+                        </div>
+                    {% endif %}
+
+                    <!-- Upload Form -->
+                    {% if entreprise.statut == 'valide' %}
+                        <hr>
+                        <h6 class="font-weight-bold text-gray-800 mb-3">
+                            <i class="fas fa-upload mr-2"></i>Ajouter un Document
+                        </h6>
+                        <a href="{{ path('app_document_index') }}" class="btn btn-success btn-icon-split">
+                             <span class="icon text-white-50">
+                                 <i class="fas fa-plus"></i>
+                             </span>
+                             <span class="text">Voir les documents</span>
+                         </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contact & Map Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Coordonnées & Localisation</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-envelope mr-2 text-gray-400"></i> Email:</strong><br> {{ entreprise.email }}</p>
+                            <p><strong><i class="fas fa-phone mr-2 text-gray-400"></i> Téléphone:</strong><br> {{ entreprise.telephone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-map-marker-alt mr-2 text-gray-400"></i> Adresse:</strong><br>
+                            {{ entreprise.adresse|nl2br }}</p>
+                            <p><strong><i class="fas fa-globe mr-2 text-gray-400"></i> Pays:</strong> {{ entreprise.pays }}</p>
+                        </div>
+                    </div>
+
+                    {% if entreprise.latitude and entreprise.longitude %}
+                        <hr>
+                        <h6 class="font-weight-bold"><i class="fas fa-map mr-2"></i> Carte</h6>
+                        <div id="map" style="height: 300px; border-radius: 0.35rem;" class="border"></div>
+                        
+                        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var map = L.map('map').setView([{{ entreprise.latitude }}, {{ entreprise.longitude }}], 13);
+                                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    maxZoom: 19,
+                                    attribution: '&copy; OpenStreetMap'
+                                }).addTo(map);
+                                L.marker([{{ entreprise.latitude }}, {{ entreprise.longitude }}]).addTo(map)
+                                    .bindPopup('<b>{{ entreprise.nom }}</b><br>{{ entreprise.adresse }}').openPopup();
+                            });
+                        </script>
+                    {% else %}
+                        <div class="alert alert-warning mb-0">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> Coordonnées GPS non renseignées.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+                </div>
+                <div class="card-body">
+                    
+                    {% if entreprise.statut == 'en_attente' %}
+                        <!-- AI Decision Aid -->
+                        <div class="alert alert-info border-left-info shadow-sm mb-4">
+                            <h6 class="font-weight-bold"><i class="fas fa-robot mr-2"></i> Analyse IA</h6>
+                            <hr>
+                            <div class="h4 font-weight-bold mb-2">{{ avg_compliance|round(1) }}%</div>
+                            <p class="small mb-0">
+                                Scoring moyen de conformité basé sur les documents soumis.
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                             <h6 class="font-weight-bold text-gray-800 mb-2">Décision</h6>
+                             
+                            <form method="post" action="{{ path('app_entreprise_validate', {'id': entreprise.id}) }}" onsubmit="return confirm('Valider cette entreprise ?');" class="mb-2">
+                                <input type="hidden" name="_token" value="{{ csrf_token('validate' ~ entreprise.id) }}">
+                                <button class="btn btn-success btn-block icon-split align-items-center justify-content-start p-0">
+                                    <span class="icon text-white-50"><i class="fas fa-check"></i></span>
+                                    <span class="text">Valider l'Entreprise</span>
+                                </button>
+                            </form>
+                            
+                            <form method="post" action="{{ path('app_entreprise_reject', {'id': entreprise.id}) }}" onsubmit="return confirm('Rejeter cette entreprise ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ entreprise.id) }}">
+                                <div class="form-group mb-2">
+                                    <textarea name="commentaire" class="form-control form-control-sm" rows="2" required placeholder="Motif du rejet..."></textarea>
+                                </div>
+                                <button class="btn btn-danger btn-block icon-split align-items-center justify-content-start p-0">
+                                    <span class="icon text-white-50"><i class="fas fa-times"></i></span>
+                                    <span class="text">Rejeter le dossier</span>
+                                </button>
+                            </form>
+                        </div>
+                        <hr>
+                    {% endif %}
+
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{{ path('app_entreprise_pdf', {'id': entreprise.id}) }}" class="btn btn-info btn-icon-split mb-2" target="_blank">
+                             <span class="icon text-white-50"><i class="fas fa-file-pdf"></i></span>
+                             <span class="text text-left w-100">Générer PDF</span>
+                        </a>
+                        
+                        <a href="{{ path('app_entreprise_edit', {'id': entreprise.id}) }}" class="btn btn-warning btn-icon-split mb-2">
+                            <span class="icon text-white-50"><i class="fas fa-pen"></i></span>
+                             <span class="text text-left w-100">Modifier</span>
+                        </a>
+
+                        {{ include('admin/entreprise/_delete_form.html.twig') }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Fiche Entreprise - {{ entreprise.nom }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4e73df;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 15px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4e73df;
+            margin: 0;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #858796;
+            margin-top: 5px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #e3e6f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #4e73df;
+        }
+        .row {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            width: 150px;
+            display: inline-block;
+        }
+        .value {
+            display: inline-block;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 40px;
+            border: 1px solid #e3e6f0;
+            padding: 20px;
+            width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+            background: #f8f9fc;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #858796;
+            border-top: 1px solid #e3e6f0;
+            padding-top: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.4em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+            color: #fff;
+            background-color: #6c757d;
+        }
+        .badge-success { background-color: #1cc88a; }
+        .badge-warning { background-color: #f6c23e; }
+        .badge-danger { background-color: #e74a3b; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">Fiche Entreprise</h1>
+        <div class="subtitle">Généré le {{ "now"|date("d/m/Y à H:i") }}</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Informations Générales</div>
+        <div class="row">
+            <span class="label">Nom:</span>
+            <span class="value">{{ entreprise.nom }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Matricule Fiscal:</span>
+            <span class="value">{{ entreprise.matriculeFiscale }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Secteur:</span>
+            <span class="value">{{ entreprise.secteur }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Taille:</span>
+            <span class="value">{{ entreprise.taille }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Téléphone:</span>
+            <span class="value">{{ entreprise.telephone }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Email:</span>
+            <span class="value">{{ entreprise.email }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Statut:</span>
+            <span class="value">
+                {% if entreprise.statut == 'valide' %}
+                    <span class="badge badge-success">Validé</span>
+                {% elseif entreprise.statut == 'en_attente' %}
+                    <span class="badge badge-warning">En attente</span>
+                {% else %}
+                    <span class="badge badge-danger">Rejeté</span>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Adresse</div>
+        <div class="row">
+            <span class="label">Adresse:</span>
+            <span class="value">{{ entreprise.adresse|nl2br }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Pays:</span>
+            <span class="value">{{ entreprise.pays }}</span>
+        </div>
+    </div>
+
+    {% if documents is defined and documents is not empty %}
+    <div class="section">
+        <div class="section-title">Documents Associés</div>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr style="background-color: #f8f9fc;">
+                    <th style="border: 1px solid #e3e6f0; padding: 8px; text-align: left;">Nom</th>
+                    <th style="border: 1px solid #e3e6f0; padding: 8px; text-align: left;">Type</th>
+                    <th style="border: 1px solid #e3e6f0; padding: 8px; text-align: center;">Date</th>
+                    <th style="border: 1px solid #e3e6f0; padding: 8px; text-align: center;">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td style="border: 1px solid #e3e6f0; padding: 8px;">{{ doc.nom }}</td>
+                    <td style="border: 1px solid #e3e6f0; padding: 8px;">{{ doc.type }}</td>
+                    <td style="border: 1px solid #e3e6f0; padding: 8px; text-align: center;">{{ doc.dateUpload|date('d/m/Y') }}</td>
+                    <td style="border: 1px solid #e3e6f0; padding: 8px; text-align: center;">
+                        {% if doc.statut == 'valide' %}
+                            <span style="color: #1cc88a; font-weight: bold;">Validé</span>
+                        {% elseif doc.statut == 'rejete' %}
+                            <span style="color: #e74a3b; font-weight: bold;">Rejeté</span>
+                        {% else %}
+                            <span style="color: #f6c23e; font-weight: bold;">En attente</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if qrCode %}
+    <div class="qr-code">
+        <img src="{{ qrCode }}" alt="QR Code" width="200">
+        <div style="margin-top: 10px; font-weight: bold; color: #4e73df;">
+            Code d'accès: {{ entreprise.accessCode }}
+        </div>
+        <div style="font-size: 12px; color: #858796;">
+            Scannez pour vérifier l'authenticité
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>MindAudit - Plateforme d'Audit et de Conformité</p>
+        <p>&copy; {{ "now"|date("Y") }} Tous droits réservés.</p>
+    </div>
+</body>
+</html>

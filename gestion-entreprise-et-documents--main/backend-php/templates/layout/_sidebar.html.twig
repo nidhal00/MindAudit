@@ -1,0 +1,80 @@
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ path('app_front_home') }}">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">MindAudit</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item {{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' : '' }}">
+        <a class="nav-link" href="{{ path('app_admin_dashboard') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard Admin</span></a>
+    </li>
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Metier
+    </div>
+    
+    <!-- Nav Item - Entreprises -->
+    <li class="nav-item {{ app.request.get('_route') starts with 'app_entreprise' ? 'active' : '' }}">
+        <a class="nav-link" href="{{ path('app_entreprise_index') }}">
+            <i class="fas fa-fw fa-building"></i>
+            <span>Mes Entreprises</span></a>
+    </li>
+
+    <!-- Nav Item - Documents -->
+    <li class="nav-item {{ app.request.get('_route') starts with 'app_document' ? 'active' : '' }}">
+        <a class="nav-link" href="{{ path('app_document_index') }}">
+            <i class="fas fa-fw fa-file-invoice"></i>
+            <span>Mes Documents</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Analyse & Stats
+    </div>
+
+    <!-- Nav Item - Statistiques -->
+    <li class="nav-item {{ app.request.get('_route') == 'app_admin_stats' ? 'active' : '' }}">
+        <a class="nav-link" href="{{ path('app_admin_stats') }}">
+            <i class="fas fa-fw fa-chart-pie"></i>
+            <span>Statistiques</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Front-Office
+    </div>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_front_home') }}">
+            <i class="fas fa-fw fa-home"></i>
+            <span>Retour Accueil</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->

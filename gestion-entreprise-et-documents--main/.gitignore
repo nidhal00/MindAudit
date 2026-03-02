@@ -1,0 +1,21 @@
+# Build / généré
+backend-java/out/
+backend-java/target/
+backend-php/var/
+backend-php/vendor/
+
+# Env local
+backend-php/.env
+backend-php/.env.dev
+backend-php/.env.test
+backend-php/.env.local
+backend-php/.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

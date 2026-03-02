@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport d'Activité MindAudit</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #4e73df; padding-bottom: 10px; }
+        .logo { max-width: 150px; margin-bottom: 10px; }
+        h1 { color: #4e73df; margin: 0; }
+        .info-card { background: #f8f9fc; padding: 15px; margin-bottom: 20px; border-left: 4px solid #4e73df; }
+        .section-title { font-size: 14px; font-weight: bold; color: #2e59d9; margin-bottom: 10px; margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f8f9fc; color: #4e73df; }
+        .badge { padding: 3px 6px; border-radius: 4px; color: white; font-weight: bold; font-size: 10px; }
+        .badge-success { background-color: #1cc88a; }
+        .badge-warning { background-color: #f6c23e; }
+        .badge-danger { background-color: #e74a3b; }
+        .badge-secondary { background-color: #858796; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10px; color: #858796; padding: 10px; border-top: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Rapport d'Activité MindAudit</h1>
+        <p>Généré le {{ date|date('d/m/Y à H:i') }}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Vue d'ensemble</h3>
+        <table style="border: none;">
+            <tr style="border: none;">
+                <td style="border: none;"><strong>Total Entreprises :</strong> {{ total_entreprises }}</td>
+                <td style="border: none;"><strong>Total Documents :</strong> {{ total_documents }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section-title">Répartition des Documents</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Statut</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in status_stats %}
+            <tr>
+                <td>{{ stat.statut|default('Inconnu')|capitalize }}</td>
+                <td>{{ stat.count }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="2">Aucune donnée disponible</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="section-title">Dernières Entreprises Inscrites</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Date d'inscription</th>
+                <th>Matricule</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entr in recent_entreprises %}
+            <tr>
+                <td>{{ entr.nom }}</td>
+                <td>{{ entr.email }}</td>
+                <td>{{ entr.dateCreation|date('d/m/Y') }}</td>
+                <td>{{ entr.matriculeFiscale }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Document généré automatiquement par la plateforme MindAudit.
+    </div>
+</body>
+</html>

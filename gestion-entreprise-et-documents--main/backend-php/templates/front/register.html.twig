@@ -1,0 +1,90 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Inscription Entreprise - MindAudit{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold mb-4 text-center">Inscription Entreprise</h2>
+                    <p class="text-muted text-center mb-5">Veuillez remplir le formulaire ci-dessous pour soumettre votre demande d'audit.</p>
+
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.nom) }}
+                                {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom de l\'entreprise'}}) }}
+                                {{ form_errors(form.nom) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.matriculeFiscale) }}
+                                {{ form_widget(form.matriculeFiscale, {'attr': {'class': 'form-control', 'placeholder': 'Matricule Fiscale'}}) }}
+                                {{ form_errors(form.matriculeFiscale) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.email) }}
+                                {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'contact@entreprise.com'}}) }}
+                                {{ form_errors(form.email) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.telephone) }}
+                                {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': '+216 ...'}}) }}
+                                {{ form_errors(form.telephone) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.secteur) }}
+                                {{ form_widget(form.secteur, {'attr': {'class': 'form-control', 'placeholder': 'Secteur d\'activité'}}) }}
+                                {{ form_errors(form.secteur) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.taille) }}
+                                {{ form_widget(form.taille, {'attr': {'class': 'form-select'}}) }}
+                                {{ form_errors(form.taille) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.pays) }}
+                                {{ form_widget(form.pays, {'attr': {'class': 'form-control', 'placeholder': 'Pays'}}) }}
+                                {{ form_errors(form.pays) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.dateCreation) }}
+                                {{ form_widget(form.dateCreation, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.dateCreation) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_label(form.adresse) }}
+                            {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'placeholder': 'Adresse complète', 'rows': '3'}}) }}
+                            {{ form_errors(form.adresse) }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Soumettre ma demande
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+
+                    <div class="text-center mt-4">
+                        <a href="{{ path('app_front_home') }}" class="text-decoration-none text-muted"> 
+                            <i class="fa-solid fa-arrow-left me-1"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

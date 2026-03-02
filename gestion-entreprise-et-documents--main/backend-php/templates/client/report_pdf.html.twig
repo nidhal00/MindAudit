@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport d'Audit - MindAudit</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #4e73df; padding-bottom: 10px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4e73df; }
+        .title { font-size: 18px; margin-top: 10px; text-transform: uppercase; }
+        .meta-info { margin-bottom: 20px; background: #f8f9fc; padding: 10px; }
+        .score-box { text-align: center; margin: 20px 0; padding: 15px; border: 1px solid #ddd; background: #fff; }
+        .score-val { font-size: 32px; font-weight: bold; color: #1cc88a; }
+        .details-list { list-style: none; padding: 0; }
+        .details-list li { padding: 8px 0; border-bottom: 1px dashed #eee; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #aaa; border-top: 1px solid #eee; padding-top: 10px; }
+        .stamp { text-align: right; margin-top: 30px; }
+        .stamp img { width: 100px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">MindAudit</div>
+        <div class="title">Certificat de Conformité</div>
+    </div>
+
+    <div class="meta-info">
+        <strong>Entreprise :</strong> {{ entreprise.nom }}<br>
+        <strong>Document :</strong> {{ document.nom }} ({{ document.type }})<br>
+        <strong>Date d'analyse :</strong> {{ "now"|date("d/m/Y H:i") }}<br>
+        <strong>Matricule :</strong> {{ entreprise.matriculeFiscale }}
+    </div>
+
+    <div class="score-box">
+        <div>Score de Conformité IA</div>
+        <div class="score-val">{{ document.noteIA }} / 100</div>
+        <div>
+            {% if document.noteIA >= 80 %}
+                <span style="color: green;">EXCELLENT - CONFORME</span>
+            {% elseif document.noteIA >= 50 %}
+                <span style="color: orange;">MOYEN - ATTENTION REQUISE</span>
+            {% else %}
+                <span style="color: red;">CRITIQUE - NON CONFORME</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <h3>Détails de l'Analyse</h3>
+    <ul class="details-list">
+        {% if analysis.details is defined %}
+            {% for point in analysis.details %}
+                <li>{{ point }}</li>
+            {% endfor %}
+        {% else %}
+            <li>Aucun détail disponible.</li>
+        {% endif %}
+    </ul>
+
+    {% if analysis.extracted_text_preview is defined and analysis.extracted_text_preview %}
+        <h3>Extrait du Contenu (OCR)</h3>
+        <p style="font-style: italic; background: #eee; padding: 10px; border-left: 3px solid #ccc;">
+            "{{ analysis.extracted_text_preview }}"
+        </p>
+    {% endif %}
+
+    <div class="stamp">
+        <p>Validé par l'Algorithme MindAudit</p>
+        <!-- Simulation de tampon -->
+        <div style="border: 3px double #4e73df; color: #4e73df; display: inline-block; padding: 5px 15px; transform: rotate(-10deg); font-weight: bold;">
+            MIND-AUDIT CERTIFIE
+        </div>
+    </div>
+
+    <div class="footer">
+        Document généré automatiquement par MindAudit AI Engine. © {{ "now"|date("Y") }}
+    </div>
+
+</body>
+</html>

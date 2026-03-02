@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .warning-icon {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #f6c23e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .reason-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #e74a3b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #721c24;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #4e73df;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .button-container {
+            text-align: center;
+        }
+        .footer {
+            background-color: #f8f9fc;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #858796;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>⚠️ MindAudit</h1>
+        </div>
+        
+        <div class="content">
+            <div class="warning-icon">❌</div>
+            
+            <h2 style="color: #e74a3b; text-align: center;">Inscription Non Validée</h2>
+            
+            <div class="message">
+                <p>Bonjour <strong>{{ entreprise.nom }}</strong>,</p>
+                
+                <p>Nous avons examiné votre demande d'inscription sur la plateforme <strong>MindAudit</strong>.</p>
+                
+                <p>Malheureusement, nous ne pouvons pas valider votre inscription pour le moment en raison des éléments suivants :</p>
+            </div>
+            
+            <div class="reason-box">
+                <p style="margin: 0;"><strong>📋 Raison du rejet :</strong></p>
+                <p style="margin: 10px 0 0 0;">{{ raison|default('Informations incomplètes ou incorrectes. Veuillez vérifier vos données et soumettre à nouveau votre demande.') }}</p>
+            </div>
+            
+            <div class="alert-box">
+                <p style="margin: 0 0 10px 0;"><strong>🔍 Informations soumises :</strong></p>
+                <p style="margin: 5px 0;">Entreprise : <strong>{{ entreprise.nom }}</strong></p>
+                <p style="margin: 5px 0;">Matricule Fiscal : <strong>{{ entreprise.matriculeFiscale }}</strong></p>
+                <p style="margin: 5px 0;">Email : <strong>{{ entreprise.email }}</strong></p>
+                <p style="margin: 5px 0;">Secteur : <strong>{{ entreprise.secteur|default('-') }}</strong></p>
+            </div>
+            
+            <div class="message" style="margin-top: 30px;">
+                <p><strong>📝 Actions recommandées :</strong></p>
+                <ul>
+                    <li>Vérifiez que votre matricule fiscal est correct</li>
+                    <li>Assurez-vous que toutes les informations sont complètes</li>
+                    <li>Utilisez un email professionnel de votre entreprise</li>
+                    <li>Soumettez à nouveau votre demande avec les corrections</li>
+                </ul>
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ url('app_front_register') }}" class="cta-button">
+                    🔄 Soumettre une Nouvelle Demande
+                </a>
+            </div>
+            
+            <div class="message" style="margin-top: 30px; font-size: 14px; color: #666; text-align: center;">
+                <p>Besoin d'aide ? Contactez-nous à <strong>support@mindaudit.tn</strong></p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 MindAudit Platform. Conçu avec passion pour l'excellence.</p>
+            <p>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
+        </div>
+    </div>
+</body>
+</html>

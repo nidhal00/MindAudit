@@ -1,0 +1,17 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> Custom MindAudit ###
+/public/uploads/*
+!/public/uploads/.gitkeep
+.idea/
+.vscode/
+*.log
+###< Custom MindAudit ###

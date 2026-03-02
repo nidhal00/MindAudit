@@ -1,0 +1,102 @@
+<table class="table table-bordered" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Entreprise</th>
+            <th>Type</th>
+            <th>Score IA</th>
+            <th>Statut</th>
+            <th>Date Upload</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tfoot>
+         <tr>
+            <th>Nom</th>
+            <th>Entreprise</th>
+            <th>Type</th>
+            <th>Score IA</th>
+            <th>Statut</th>
+            <th>Date Upload</th>
+            <th>Actions</th>
+        </tr>
+    </tfoot>
+    <tbody>
+    {% for document in documents %}
+        <tr>
+            <td>
+                <div class="font-weight-bold">{{ document.nom }}</div>
+                {% if document.url %}
+                    <a href="{{ asset('uploads/documents/' ~ document.url) }}" target="_blank" class="small text-primary">
+                        <i class="fas fa-download"></i> Télécharger
+                    </a>
+                {% else %}
+                    <span class="small text-muted"><i class="fas fa-ban"></i> Aucun fichier</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if document.entreprise %}
+                    <a href="{{ path('app_entreprise_show', {'id': document.entreprise.id}) }}" class="text-dark font-weight-bold">
+                        <i class="fas fa-building text-gray-400"></i> {{ document.entreprise.nom }}
+                    </a>
+                {% else %}
+                    <span class="text-muted">-</span>
+                {% endif %}
+            </td>
+            <td>
+                <code>{{ document.type }}</code>
+            </td>
+            <td>
+                {% if document.noteIA is not null %}
+                    {% set barClass = 'success' %}
+                    {% if document.noteIA < 50 %}
+                        {% set barClass = 'danger' %}
+                    {% elseif document.noteIA < 75 %}
+                        {% set barClass = 'warning' %}
+                    {% endif %}
+                    
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ document.noteIA }}%</div>
+                        </div>
+                        <div class="col">
+                            <div class="progress progress-sm mr-2">
+                                <div class="progress-bar bg-{{ barClass }}" role="progressbar" style="width: {{ document.noteIA }}%" aria-valuenow="{{ document.noteIA }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <span class="text-muted small">N/A</span>
+                {% endif %}
+            </td>
+            <td>
+                {% set statusClass = 'secondary' %}
+                {% if document.statut == 'valide' %}
+                    {% set statusClass = 'success' %}
+                {% elseif document.statut == 'rejete' %}
+                    {% set statusClass = 'danger' %}
+                {% elseif document.statut == 'en_attente' %}
+                    {% set statusClass = 'warning' %}
+                {% endif %}
+                <span class="badge badge-{{ statusClass }}">{{ document.statut|replace({'_': ' '})|capitalize }}</span>
+            </td>
+            <td>{{ document.dateUpload ? document.dateUpload|date('d/m/Y H:i') : '' }}</td>
+            <td>
+                <a href="{{ path('app_document_show', {'id': document.id}) }}" class="btn btn-info btn-circle btn-sm" title="Voir">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{{ path('app_document_edit', {'id': document.id}) }}" class="btn btn-warning btn-circle btn-sm" title="Modifier">
+                    <i class="fas fa-pen"></i>
+                </a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7" class="text-center py-4">
+                <i class="fas fa-file-pdf fa-3x text-gray-300 mb-3"></i>
+                <p class="text-gray-500 mb-0">Aucun document trouvé.</p>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

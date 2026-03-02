@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard MindAudit | Workspace Intelligent</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 2rem 1rem;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .card-stat {
+            border-left: 4px solid var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Role Switcher (For Demo Only) -->
+    <div style="position: fixed; top: 1rem; right: 2rem; z-index: 1000;" class="glass p-2">
+        <label style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">SIMULER
+            L'ACTEUR :</label>
+        <select id="roleSelector" style="font-size: 0.8rem; padding: 0.3rem;" onchange="switchRole(this.value)">
+            <option value="entreprise">🏢 Entreprise</option>
+            <option value="admin">🔧 Admin</option>
+            <option value="auditeur">🎓 Auditeur</option>
+            <option value="employe">👤 Employé</option>
+        </select>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar glass">
+        <div class="logo mb-4"
+            style="font-size: 1.25rem; font-weight: 900; color: white; margin-bottom: 3rem; text-align: center;">
+            <i class="fa-solid fa-atom"></i> MINDAUDIT
+        </div>
+
+        <nav id="nav-links">
+            <!-- Dynamically populated links -->
+        </nav>
+
+        <div style="position: absolute; bottom: 2rem; left: 1rem; right: 1rem;">
+            <div class="glass" style="padding: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                <div
+                    style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div style="overflow: hidden;">
+                    <p id="userName"
+                        style="font-size: 0.9rem; font-weight: 600; white-space: nowrap; text-overflow: ellipsis;">
+                        Connecté</p>
+                    <span id="userRoleBadge" class="role-badge"
+                        style="background: rgba(255,255,255,0.1); font-size: 0.6rem;">ENTREPRISE</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <div>
+                <h2 id="pageTitle" style="font-size: 2rem;">Bonjour, Sarah !</h2>
+                <p id="pageSubtitle" style="color: var(--text-muted);">Voici un aperçu de vos audits en cours.</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn glass"><i class="fa-solid fa-bell"></i></button>
+                <div id="actionBtnContainer">
+                    <!-- Dynamic Action Button -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div id="statsGrid" class="grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 3rem;">
+            <!-- Dynamically populated stats -->
+        </div>
+
+        <!-- content areas -->
+        <div id="mainSection" class="grid" style="grid-template-columns: 2fr 1fr;">
+            <div class="glass p-4" id="primaryContent">
+                <!-- Main list or Chart -->
+            </div>
+            <div class="glass p-4" id="secondaryContent">
+                <!-- Sidebar info or small widgets -->
+            </div>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
+    <script>
+        // Inline role switching logic for the template
+        const roles = {
+            entreprise: {
+                name: "Entreprise Innov",
+                title: "Espace Entreprise",
+                subtitle: "Gérez vos documents et suivez vos rapports d'audit IA.",
+                nav: [
+                    { label: "Dashboard", icon: "fa-gauge" },
+                    { label: "Mes Documents", icon: "fa-file-arrow-up" },
+                    { label: "Rapports IA", icon: "fa-robot" },
+                    { label: "Profil Société", icon: "fa-building" }
+                ],
+                stats: [
+                    { label: "Documents", val: "12", icon: "fa-file", color: "#4f46e5" },
+                    { label: "Audits Finis", val: "3", icon: "fa-check", color: "#10b981" },
+                    { label: "Conformité", val: "84%", icon: "fa-chart-pie", color: "#f59e0b" },
+                    { label: "Alertes", val: "1", icon: "fa-triangle-exclamation", color: "#ef4444" }
+                ],
+                primary: "<h3>Liste des Documents Récents</h3><div style='margin-top:2rem; color:var(--text-muted)'>Aucun document n'a été uploadé aujourd'hui. <br><br> <div class='glass p-4 text-center' style='border: 2px dashed var(--glass-border)'>Glissez-déposez vos fichiers ici</div></div>",
+                secondary: "<h3>Rapport IA</h3><p style='color:var(--text-muted); margin-top:1rem;'>Analyse de conformité ISO 9001 en cours...</p>",
+                btn: "<button class='btn btn-primary'><i class='fa-solid fa-plus'></i> Upload Document</button>"
+            },
+            admin: {
+                name: "Admin MindAudit",
+                title: "Supervision Système",
+                subtitle: "Validation des inscriptions et gestion globale de la plateforme.",
+                nav: [
+                    { label: "Vue d'ensemble", icon: "fa-chart-line" },
+                    { label: "Entreprises", icon: "fa-building" },
+                    { label: "Documents", icon: "fa-file-shield" },
+                    { label: "Utilisateurs", icon: "fa-users-gear" }
+                ],
+                stats: [
+                    { label: "Ent. à Valider", val: "5", icon: "fa-clock", color: "#f59e0b" },
+                    { label: "Docs à Approuver", val: "14", icon: "fa-file-signature", color: "#4f46e5" },
+                    { label: "Taux Succès IA", val: "92%", icon: "fa-brain", color: "#10b981" },
+                    { label: "Erreurs Système", val: "0", icon: "fa-bug", color: "#ef4444" }
+                ],
+                primary: "<h3>Inscriptions en Attente</h3><ul style='list-style:none; margin-top:1.5rem;'><li class='glass p-3 mb-2 d-flex justify-content-between'><span>Djezzy SA</span> <button class='btn btn-primary' style='padding:0.2rem 0.5rem'>Valider</button></li><li class='glass p-3 mb-2 d-flex justify-content-between'><span>Ooredoo</span> <button class='btn btn-primary' style='padding:0.2rem 0.5rem'>Valider</button></li></ul>",
+                secondary: "<h3>Quick Logs</h3><p style='font-size:0.8rem; color:var(--text-muted)'>10:24 - Nouvel upload (Air Algérie)</p>",
+                btn: "<button class='btn btn-primary'><i class='fa-solid fa-gear'></i> Paramètres IA</button>"
+            },
+            auditeur: {
+                name: "Dr. Amine Khider",
+                title: "Expertise & Audit",
+                subtitle: "Analysez les documents entreprises et générez des évaluations.",
+                nav: [
+                    { label: "Mes Audits", icon: "fa-clipboard-check" },
+                    { label: "Docs Entreprises", icon: "fa-folder-open" },
+                    { label: "Évaluations", icon: "fa-pen-to-square" },
+                    { label: "Calendrier", icon: "fa-calendar-days" }
+                ],
+                stats: [
+                    { label: "Dossier Attente", val: "8", icon: "fa-briefcase", color: "#4f46e5" },
+                    { label: "IA Validés", val: "45", icon: "fa-robot", color: "#10b981" },
+                    { label: "Éval. à Faire", val: "3", icon: "fa-user-pen", color: "#f59e0b" },
+                    { label: "Score Qualité", val: "9.5", icon: "fa-star", color: "#f43f5e" }
+                ],
+                primary: "<h3>Documents à Review</h3><div class='glass p-3 mb-2'><strong>Rapport RH - TechInnov</strong> <p style='font-size:0.8rem; color:var(--text-muted)'>IA a détecté 2 anomalies de conformité.</p><button class='btn glass mt-2' style='font-size:0.7rem'>Ouvrir l'Analyseur</button></div>",
+                secondary: "<h3>Evaluations</h3><button class='btn btn-primary w-100 mb-2'>+ Nouvelle Évaluation</button><p style='font-size:0.8rem'>Dernière reco: Optimisation bien-être</p>",
+                btn: "<button class='btn btn-primary'><i class='fa-solid fa-file-export'></i> Générer Rapport Final</button>"
+            },
+            employe: {
+                name: "Yassine Toumi",
+                title: "Mon Espace Bien-être",
+                subtitle: "Passez vos tests psychologiques et consultez vos recommandations IA.",
+                nav: [
+                    { label: "Mon Dashboard", icon: "fa-house-user" },
+                    { label: "Tests & Évals", icon: "fa-brain" },
+                    { label: "Mes Résultats", icon: "fa-chart-line" },
+                    { label: "Événements", icon: "fa-masks-theater" }
+                ],
+                stats: [
+                    { label: "Tests Finis", val: "2/3", icon: "fa-check-double", color: "#10b981" },
+                    { label: "Humeur Moy.", val: "Optimiste", icon: "fa-face-smile", color: "#4f46e5" },
+                    { label: "Recos IA", val: "4", icon: "fa-lightbulb", color: "#f59e0b" },
+                    { label: "Prochain Test", val: "J-2", icon: "fa-clock", color: "#f43f5e" }
+                ],
+                primary: "<h3>Diagnostic Psychologique de Mars</h3><div class='glass p-5 text-center'><i class='fa-solid fa-brain fa-3x mb-3 text-secondary'></i><p>Ce test prend environ 10 minutes. Il nous aide à améliorer votre environnement de travail.</p><button class='btn btn-primary mt-4'>Commencer le Test</button></div>",
+                secondary: "<h3>Vos Recommandations IA</h3><div class='glass p-3 mb-2' style='border-left: 3px solid var(--secondary)'>Méditation guidée (15 min)</div><div class='glass p-3 mb-2' style='border-left: 3px solid var(--secondary)'>Webinaire: Gestion du Stress</div>",
+                btn: "<button class='btn glass'><i class='fa-solid fa-circle-question'></i> Aide</button>"
+            }
+        };
+
+        function switchRole(roleId) {
+            const data = roles[roleId] || roles.entreprise;
+
+            document.getElementById('userName').innerText = data.name;
+            document.getElementById('userRoleBadge').innerText = roleId.toUpperCase();
+            document.getElementById('pageTitle').innerText = data.title;
+            document.getElementById('pageSubtitle').innerText = data.subtitle;
+            document.getElementById('primaryContent').innerHTML = data.primary;
+            document.getElementById('secondaryContent').innerHTML = data.secondary;
+            document.getElementById('actionBtnContainer').innerHTML = data.btn;
+
+            // Update Nav
+            const nav = document.getElementById('nav-links');
+            nav.innerHTML = '';
+            data.nav.forEach((link, idx) => {
+                const a = document.createElement('a');
+                a.href = "#";
+                a.className = `sidebar-link ${idx === 0 ? 'active' : ''}`;
+                a.innerHTML = `<i class="fa-solid ${link.icon}"></i> ${link.label}`;
+                nav.appendChild(a);
+            });
+
+            // Update Stats
+            const stats = document.getElementById('statsGrid');
+            stats.innerHTML = '';
+            data.stats.forEach(s => {
+                const div = document.createElement('div');
+                div.className = "card glass card-stat";
+                div.style.borderLeftColor = s.color;
+                div.innerHTML = `
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${s.label}</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; margin-top: 0.5rem;">${s.val}</div>
+                    <i class="fa-solid ${s.icon}" style="position: absolute; right: 1rem; bottom: 1rem; opacity: 0.1; font-size: 2rem;"></i>
+                `;
+                stats.appendChild(div);
+            });
+        }
+
+        // Initialize with Entreprise role
+        window.onload = () => switchRole('entreprise');
+    </script>
+</body>
+
+</html>

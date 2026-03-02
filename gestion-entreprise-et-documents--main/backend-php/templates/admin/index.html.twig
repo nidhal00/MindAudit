@@ -1,0 +1,339 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tableau de Bord - MindAudit Admin{% endblock %}
+
+{% block body %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Tableau de Bord</h1>
+    <a href="{{ path('app_admin_export_pdf') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-download fa-sm text-white-50"></i> Générer Rapport</a>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Total Entreprises Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Entreprises Inscrites</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_entreprises }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-building fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Documents Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Documents Analysés</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_documents }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            En Attente</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avg Score Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Confiance IA Moyenne
+                        </div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">85%</div>
+                            </div>
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                        style="width: 85%" aria-valuenow="50" aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Last Entreprises -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Dernières Inscriptions</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entreprise in recent_entreprises %}
+                            <tr>
+                                <td>{{ entreprise.nom }}</td>
+                                <td>{{ entreprise.email }}</td>
+                                <td>{{ entreprise.dateCreation|date('d/m/Y') }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3">Aucune entreprise trouvée</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Last Documents -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Derniers Documents</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Score IA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in recent_documents %}
+                            <tr>
+                                <td>{{ doc.nom }}</td>
+                                <td>{{ doc.type }}</td>
+                                <td>
+                                    {% if doc.noteIA is not null %}
+                                        <span class="badge badge-{{ doc.noteIA >= 80 ? 'success' : (doc.noteIA >= 50 ? 'warning' : 'danger') }}">
+                                            {{ doc.noteIA }}%
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                             <tr><td colspan="3">Aucun document trouvé</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+
+    <!-- Area Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Répartition des Documents par Statut</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="myAreaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Entreprises par Secteur</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-primary"></i> Technologie
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> Santé
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-info"></i> Finance
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Page level plugins -->
+    <script src="{{ asset('assets/sb-admin-2/vendor/chart.js/Chart.min.js') }}"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
+
+        // Pie Chart Example
+        var ctx = document.getElementById("myPieChart");
+        var myPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [{% for stat in sector_stats %}"{{ stat.secteur|default('Non défini') }}",{% endfor %}],
+                datasets: [{
+                    data: [{% for stat in sector_stats %}{{ stat.count }},{% endfor %}],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617', '#60616f', '#373840'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 80,
+            },
+        });
+
+        // Bar Chart (Documents)
+        var ctxBar = document.getElementById("myAreaChart");
+        var myBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: [{% for stat in status_stats %}"{{ stat.statut|default('Inconnu') }}",{% endfor %} "Validé", "Rejeté", "En Attente"],
+                datasets: [{
+                    label: "Documents",
+                    backgroundColor: "#4e73df",
+                    hoverBackgroundColor: "#2e59d9",
+                    borderColor: "#4e73df",
+                    data: [{% for stat in status_stats %}{{ stat.count }},{% endfor %} 10, 5, 2], // Dummy data fallback if empty
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 6
+                        },
+                        maxBarThickness: 25,
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            maxTicksLimit: 5,
+                            padding: 10,
+                        },
+                        gridLines: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+            }
+        });
+    </script>
+{% endblock %}

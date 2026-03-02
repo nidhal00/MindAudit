@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindAudit | Intelligence Artificielle au Service de vos Audits</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="container">
+        <nav class="glass" style="margin-top: 1.5rem; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div class="logo" style="font-size: 1.5rem; font-weight: 900; background: linear-gradient(to right, #818cf8, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="fa-solid fa-atom me-2"></i> MINDAUDIT
+            </div>
+            <div class="nav-links" style="display: flex; gap: 2rem;">
+                <a href="#features" style="color: white; text-decoration: none; font-weight: 500;">Solutions</a>
+                <a href="#register" style="color: white; text-decoration: none; font-weight: 500;">Inscription</a>
+                <a href="dashboard.html" class="btn btn-primary" style="padding: 0.5rem 1rem;">Accès Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section style="padding: 8rem 0; text-align: center;">
+            <h1 style="font-size: 4.5rem; margin-bottom: 2rem; background: linear-gradient(to bottom, #fff 40%, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Auditez votre Entreprise <br> avec la puissance de l'IA
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.25rem; max-width: 700px; margin: 0 auto 3rem;">
+                Simplifiez vos processus RH et financiers. MindAudit automatise l'analyse de vos documents pour des audits rapides, précis et impartiaux.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="#register" class="btn btn-primary">Inscrire mon Entreprise</a>
+                <button class="btn glass">Découvrir les Acteurs</button>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section id="features" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 8rem;">
+            <div class="card glass">
+                <i class="fa-solid fa-building-circle-check fa-2x mb-3 text-primary"></i>
+                <h3 style="margin-top: 1rem;">Entreprises</h3>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Gérez vos certifications et uploadez vos rapports RH en toute sécurité.</p>
+            </div>
+            <div class="card glass">
+                <i class="fa-solid fa-user-tie fa-2x mb-3 text-secondary"></i>
+                <h3 style="margin-top: 1rem;">Administrateur</h3>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Supervisez l'ensemble des audits et gérez les accès de la plateforme.</p>
+            </div>
+            <div class="card glass">
+                <i class="fa-solid fa-stethoscope fa-2x mb-3 text-accent"></i>
+                <h3 style="margin-top: 1rem;">Auditeurs</h3>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Réalisez des évaluations psychologiques et validez les scores IA.</p>
+            </div>
+            <div class="card glass">
+                <i class="fa-solid fa-user-gear fa-2x mb-3 text-primary"></i>
+                <h3 style="margin-top: 1rem;">Employés</h3>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Accédez à vos résultats personnels et recevez des recommandations bien-être.</p>
+            </div>
+        </section>
+
+        <!-- Registration Form -->
+        <section id="register" style="max-width: 600px; margin: 0 auto 8rem;">
+            <div class="glass" style="padding: 3rem;">
+                <h2 style="margin-bottom: 1rem; text-align: center;">Inscription Entreprise</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Commencez votre transformation digitale dès aujourd'hui.</p>
+                <form>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label>Nom de l'entreprise</label>
+                        <input type="text" placeholder="Ex: TechInnov SA">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <label>Secteur d'activité</label>
+                            <select>
+                                <option>Informatique</option>
+                                <option>Finance</option>
+                                <option>Santé</option>
+                                <option>Industrie</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Taille</label>
+                            <select>
+                                <option>PME (10-50)</option>
+                                <option>ETI (50-250)</option>
+                                <option>Grand Groupe (250+)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <label>Email Professionnel</label>
+                        <input type="email" placeholder="contact@entreprise.com">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-paper-plane"></i> Envoyer ma demande
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container" style="padding: 4rem 0; border-top: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
+        <p>&copy; 2026 MindAudit Platform. Design avec passion pour l'excellence.</p>
+    </footer>
+</body>
+</html>
