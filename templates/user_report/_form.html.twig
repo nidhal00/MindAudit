@@ -1,0 +1,71 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {% if not form.vars.valid %}
+        <div class="alert alert-danger shadow-sm">
+            <i class="fas fa-exclamation-circle mr-2"></i> 
+            Veuillez corriger les erreurs ci-dessous avant d'enregistrer.
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group mb-3">
+                {{ form_label(form.title, 'Titre du Rapport', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.title, {'attr': {
+                    'class': 'form-control' ~ (form.title.vars.errors|length > 0 ? ' is-invalid' : ''), 
+                    'placeholder': 'Titre du rapport...'
+                }}) }}
+                <div class="invalid-feedback">
+                    {% if form.title.vars.errors|length > 0 %}
+                        {% for error in form.title.vars.errors %}
+                            {{ error.message }}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group mb-3">
+                {{ form_label(form.type, 'Type d\'Audit', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.type, {'attr': {
+                    'class': 'form-control' ~ (form.type.vars.errors|length > 0 ? ' is-invalid' : ''), 
+                    'placeholder': 'Type...'
+                }}) }}
+                <div class="invalid-feedback">
+                    {% for error in form.type.vars.errors %}
+                        {{ error.message }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group mb-3">
+                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.description, {'attr': {
+                    'class': 'form-control' ~ (form.description.vars.errors|length > 0 ? ' is-invalid' : ''), 
+                    'rows': 5, 
+                    'placeholder': 'Description détaillée...'
+                }}) }}
+                <div class="invalid-feedback">
+                    {% for error in form.description.vars.errors %}
+                        {{ error.message }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Hidden fields with defaults handled by controller or pre-set #}
+    <div class="d-none">
+        {{ form_row(form.status) }}
+        {{ form_row(form.priority) }}
+        {{ form_row(form.score) }}
+        {{ form_row(form.validationDate) }}
+    </div>
+
+    <div class="mt-4">
+        <button class="btn btn-primary shadow-sm">
+            <i class="fas fa-save mr-1"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+        <a href="{{ path('app_user_report_index') }}" class="btn btn-secondary shadow-sm">Retour à la liste</a>
+    </div>
+{{ form_end(form) }}

@@ -1,0 +1,128 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {% if not form.vars.valid %}
+        <div class="alert alert-danger shadow-sm">
+            <i class="fas fa-exclamation-triangle mr-2"></i> 
+            Certaines informations sont manquantes ou incorrectes.
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.title) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                    </div>
+                    {{ form_widget(form.title, {'attr': {
+                        'class': 'form-control' ~ (form.title.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }}) }}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% for error in form.title.vars.errors %}{{ error.message }}{% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+             <div class="form-group">
+                {{ form_label(form.type) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                    </div>
+                    {{ form_widget(form.type, {'attr': {
+                        'class': 'form-control' ~ (form.type.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }}) }}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% for error in form.type.vars.errors %}{{ error.message }}{% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {{ form_label(form.status) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                    </div>
+                    {{ form_widget(form.status, {'attr': {
+                        'class': 'form-control' ~ (form.status.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }}) }}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% for error in form.status.vars.errors %}{{ error.message }}{% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                {{ form_label(form.priority) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                    </div>
+                    {{ form_widget(form.priority, {'attr': {
+                        'class': 'form-control' ~ (form.priority.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }}) }}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% for error in form.priority.vars.errors %}{{ error.message }}{% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {{ form_label(form.score) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-star-half-alt"></i></span>
+                    </div>
+                    {{ form_widget(form.score, {'attr': {
+                        'class': 'form-control' ~ (form.score.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }}) }}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% for error in form.score.vars.errors %}{{ error.message }}{% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+             <div class="form-group">
+                {{ form_label(form.validationDate) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                    </div>
+                    {{ form_widget(form.validationDate, {'attr': {
+                        'class': 'form-control' ~ (form.validationDate.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }}) }}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% for error in form.validationDate.vars.errors %}{{ error.message }}{% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {
+            'class': 'form-control' ~ (form.description.vars.errors|length > 0 ? ' is-invalid' : ''),
+            'rows': 5
+        }}) }}
+        <div class="invalid-feedback d-block">
+            {% for error in form.description.vars.errors %}{{ error.message }}{% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-start align-items-center">
+        <button class="btn btn-success mr-2 shadow-sm">
+            <i class="fas fa-check"></i> {{ button_label|default('Sauvegarder') }}
+        </button>
+        <a href="{{ path('app_report_index') }}" class="btn btn-secondary shadow-sm">Retour à la liste</a>
+    </div>
+{{ form_end(form) }}
