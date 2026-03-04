@@ -37,6 +37,33 @@ MindAudit est une plateforme d'audit interne intelligente qui automatise les aud
 - 👥 **Affichage** des utilisateurs par rôle
 - ⚠️ **Protection** contre la suppression de rôles assignés
 
+### Module d'Authentification OAuth (Implémenté)
+
+#### Fonctionnalités OAuth 2.0
+- ✅ **Connexion Google** - Authentification via compte Google
+- ✅ **Connexion Facebook** - Authentification via compte Facebook
+- ✅ **Création automatique** de compte utilisateur
+- ✅ **Récupération des données** (nom, prénom, email, avatar)
+- ✅ **Attribution automatique** du rôle "Utilisateur"
+- ✅ **Gestion des utilisateurs existants** - Mise à jour des infos OAuth
+
+#### Documentation OAuth
+📚 **[INDEX_OAUTH.md](INDEX_OAUTH.md)** - Index complet de la documentation OAuth
+
+Guides disponibles :
+- 🚀 **[DEMARRAGE_RAPIDE_OAUTH.md](DEMARRAGE_RAPIDE_OAUTH.md)** - Configuration en 5 minutes
+- 📋 **[OAUTH_RESUME.md](OAUTH_RESUME.md)** - Vue d'ensemble du projet
+- 📘 **[CONFIGURATION_OAUTH_GOOGLE_FACEBOOK.md](CONFIGURATION_OAUTH_GOOGLE_FACEBOOK.md)** - Guide détaillé
+- 📸 **[GUIDE_VISUEL_OAUTH.md](GUIDE_VISUEL_OAUTH.md)** - Guide visuel
+- 🧪 **[TEST_OAUTH.md](TEST_OAUTH.md)** - Tests et dépannage
+
+**Configuration requise :**
+1. Créer des applications OAuth sur Google Cloud Console et Facebook Developers
+2. Configurer le fichier `.env.local` avec vos identifiants
+3. Tester avec `php bin/test-oauth-config.php`
+
+Voir **[DEMARRAGE_RAPIDE_OAUTH.md](DEMARRAGE_RAPIDE_OAUTH.md)** pour commencer.
+
 ## 🏗️ Architecture
 
 ### Architecture MVC (Symfony)
@@ -263,5 +290,6 @@ Ce projet est développé dans le cadre d'un projet académique.
 ## 👨‍💻 Auteur
 
 Projet MindAudit - Gestion des Utilisateurs
-#   m i n d  
+#   m i n d 
+ 
  

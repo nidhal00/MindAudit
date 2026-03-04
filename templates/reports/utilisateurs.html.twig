@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+    h1 { font-size: 18px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 6px; }
+    th { background: #f8f9fa; }
+  </style>
+</head>
+<body>
+  <h1>Liste des utilisateurs</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Actif</th>
+        <th>Créé le</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.nomComplet }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.role ? u.role.nom : '-' }}</td>
+        <td>{{ u.actif ? 'Oui' : 'Non' }}</td>
+        <td>{{ u.createdAt|date('d/m/Y') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

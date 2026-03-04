@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes notifications{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <h1>Mes notifications</h1>
+  <ul class="list-group mt-3">
+    {% for n in notifications %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <span class="badge bg-{{ n.type }} me-2">{{ n.type|capitalize }}</span>
+          {{ n.message }}
+          <small class="text-muted">— {{ n.createdAt|date('d/m/Y H:i') }}</small>
+        </div>
+        {% if not n.isRead %}
+          <button class="btn btn-sm btn-outline-primary" data-id="{{ n.id }}">Marquer comme lue</button>
+        {% endif %}
+      </li>
+    {% else %}
+      <li class="list-group-item">Aucune notification</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  document.querySelectorAll('button[data-id]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      const res = await fetch(`/notifications/${id}/read`, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (res.ok) location.reload();
+    });
+  });
+</script>
+{% endblock %}

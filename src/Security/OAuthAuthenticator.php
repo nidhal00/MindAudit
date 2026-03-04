@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\Utilisateur;
+use App\Service\LoginRedirectService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +20,8 @@ class OAuthAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
+        private LoginRedirectService $loginRedirectService
     ) {
     }
 
@@ -52,7 +54,14 @@ class OAuthAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        $user = $token->getUser();
+        
+        if ($user instanceof Utilisateur) {
+            $redirectUrl = $this->loginRedirectService->getRedirectUrl($user);
+            return new RedirectResponse($redirectUrl);
+        }
+        
+        return new RedirectResponse($this->urlGenerator->generate('app_home'));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response

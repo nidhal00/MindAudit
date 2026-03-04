@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des actions{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <h1>Historique des actions</h1>
+  <div class="table-responsive mt-3">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Utilisateur</th>
+          <th>Action</th>
+          <th>Entité</th>
+          <th>ID</th>
+          <th>Détails</th>
+          <th>IP</th>
+          <th>UA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in logs %}
+        <tr>
+          <td>{{ l.createdAt|date('d/m/Y H:i') }}</td>
+          <td>{{ l.utilisateur ? l.utilisateur.nomComplet : 'Système' }}</td>
+          <td><span class="badge bg-secondary">{{ l.action }}</span></td>
+          <td>{{ l.entity ?: '-' }}</td>
+          <td>{{ l.entityId ?: '-' }}</td>
+          <td><small class="text-muted">{{ l.details ? l.details|json_encode : '-' }}</small></td>
+          <td>{{ l.ipAddress ?: '-' }}</td>
+          <td><small class="text-muted">{{ l.userAgent ?: '-' }}</small></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8">Aucun log</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -17,6 +19,19 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    // Verrouillage et sécurité
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $failedLoginAttempts = 0;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $lockedUntil = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $lastActivityAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $lastLoginAt = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: 'Le nom est obligatoire', groups: ['Default', 'registration'])]
@@ -46,11 +61,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        min: 6,
-        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
-        groups: ['Default', 'registration']
-    )]
     private ?string $password = null;
 
     #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
@@ -73,9 +83,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $avatar = null;
 
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: PasswordResetToken::class, cascade: ['remove'])]
+    private Collection $passwordResetTokens;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: PasswordHistory::class, cascade: ['remove'])]
+    private Collection $passwordHistory;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->passwordResetTokens = new ArrayCollection();
+        $this->passwordHistory = new ArrayCollection();
+        $this->lastActivityAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -221,5 +240,115 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // Si vous stockez des données temporaires sensibles sur l'utilisateur, effacez-les ici
+    }
+
+    /**
+     * @return Collection<int, PasswordResetToken>
+     */
+    public function getPasswordResetTokens(): Collection
+    {
+        return $this->passwordResetTokens;
+    }
+
+    public function addPasswordResetToken(PasswordResetToken $token): static
+    {
+        if (!$this->passwordResetTokens->contains($token)) {
+            $this->passwordResetTokens->add($token);
+            $token->setUtilisateur($this);
+        }
+        return $this;
+    }
+
+    public function removePasswordResetToken(PasswordResetToken $token): static
+    {
+        if ($this->passwordResetTokens->removeElement($token)) {
+            if ($token->getUtilisateur() === $this) {
+                $token->setUtilisateur(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PasswordHistory>
+     */
+    public function getPasswordHistory(): Collection
+    {
+        return $this->passwordHistory;
+    }
+
+    public function addPasswordHistory(PasswordHistory $history): static
+    {
+        if (!$this->passwordHistory->contains($history)) {
+            $this->passwordHistory->add($history);
+            $history->setUtilisateur($this);
+        }
+        return $this;
+    }
+
+    public function removePasswordHistory(PasswordHistory $history): static
+    {
+        if ($this->passwordHistory->removeElement($history)) {
+            if ($history->getUtilisateur() === $this) {
+                $history->setUtilisateur(null);
+            }
+        }
+        return $this;
+    }
+
+    // Gestion du verrouillage et activité
+    public function getFailedLoginAttempts(): int
+    {
+        return $this->failedLoginAttempts;
+    }
+
+    public function incrementFailedLoginAttempts(): static
+    {
+        $this->failedLoginAttempts++;
+        return $this;
+    }
+
+    public function resetFailedLoginAttempts(): static
+    {
+        $this->failedLoginAttempts = 0;
+        return $this;
+    }
+
+    public function getLockedUntil(): ?\DateTimeImmutable
+    {
+        return $this->lockedUntil;
+    }
+
+    public function setLockedUntil(?\DateTimeImmutable $until): static
+    {
+        $this->lockedUntil = $until;
+        return $this;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->lockedUntil !== null && $this->lockedUntil > new \DateTimeImmutable();
+    }
+
+    public function getLastActivityAt(): ?\DateTimeImmutable
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeImmutable $dt): static
+    {
+        $this->lastActivityAt = $dt;
+        return $this;
+    }
+
+    public function getLastLoginAt(): ?\DateTimeImmutable
+    {
+        return $this->lastLoginAt;
+    }
+
+    public function setLastLoginAt(?\DateTimeImmutable $dt): static
+    {
+        $this->lastLoginAt = $dt;
+        return $this;
     }
 }

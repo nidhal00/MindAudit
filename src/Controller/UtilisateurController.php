@@ -21,8 +21,8 @@ final class UtilisateurController extends AbstractController
     {
         $search = $request->query->get('search', '');
         $roleFilter = $request->query->get('role', '');
-        $sortBy = $request->query->get('sort', 'nom');
-        $order = $request->query->get('order', 'ASC');
+        $sortBy = $request->query->get('sort', 'createdAt');
+        $order = $request->query->get('order', 'DESC');
 
         if ($search || $roleFilter) {
             $utilisateurs = $utilisateurRepository->search($search, $roleFilter, $sortBy, $order);

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Utilisateur;
 use App\Form\RegistrationType;
 use App\Repository\RoleRepository;
+use App\Service\LoginRedirectService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,11 +17,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils, LoginRedirectService $loginRedirectService): Response
     {
-        // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
+        // Si l'utilisateur est déjà connecté, rediriger vers la page appropriée selon son rôle
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_dashboard');
+            $redirectUrl = $loginRedirectService->getRedirectUrl($this->getUser());
+            return $this->redirect($redirectUrl);
         }
 
         // Récupérer l'erreur de connexion s'il y en a une
@@ -41,11 +43,12 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, RoleRepository $roleRepository): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, RoleRepository $roleRepository, LoginRedirectService $loginRedirectService): Response
     {
-        // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
+        // Si l'utilisateur est déjà connecté, rediriger vers la page appropriée selon son rôle
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_dashboard');
+            $redirectUrl = $loginRedirectService->getRedirectUrl($this->getUser());
+            return $this->redirect($redirectUrl);
         }
 
         $user = new Utilisateur();
@@ -65,11 +68,14 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer le mot de passe depuis le champ non mappé
+            $plainPassword = $form->get('password')->getData();
+            
             // Encoder le mot de passe
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
-                    $form->get('password')->getData()
+                    $plainPassword
                 )
             );
 

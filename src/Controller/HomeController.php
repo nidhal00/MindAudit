@@ -16,14 +16,17 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(LoginRedirectService $loginRedirectService): Response
     {
-        // Si l'utilisateur est connecté, le rediriger vers son espace approprié
+        // Si l'utilisateur est connecté, le rediriger vers la gestion des utilisateurs
         if ($this->getUser() instanceof Utilisateur) {
             $user = $this->getUser();
+            $roles = $user->getRoles();
             
-            // Debug: afficher les informations de l'utilisateur
-            // dump($user->getRoles());
-            // dump($user->getRole());
+            // Si admin ou auditeur, rediriger vers la gestion des utilisateurs
+            if (in_array('ROLE_ADMINISTRATEUR', $roles) || in_array('ROLE_AUDITEUR', $roles)) {
+                return $this->redirectToRoute('app_utilisateur_index');
+            }
             
+            // Sinon, rediriger vers l'espace utilisateur approprié
             $redirectUrl = $loginRedirectService->getRedirectUrl($user);
             return $this->redirect($redirectUrl);
         }
@@ -56,11 +59,18 @@ class HomeController extends AbstractController
         $totalRoles = count($roleRepository->findAll());
         $statsRoles = $roleRepository->countUtilisateursParRole();
 
+        // Préparer les datasets pour Chart.js (labels + data)
+        $chartStats = [
+            'labels' => array_map(fn($s) => $s['nom'], $statsRoles),
+            'data' => array_map(fn($s) => (int)$s['nbUtilisateurs'], $statsRoles),
+        ];
+
         return $this->render('home/dashboard.html.twig', [
             'totalUtilisateurs' => $totalUtilisateurs,
             'utilisateursActifs' => $utilisateursActifs,
             'totalRoles' => $totalRoles,
             'statsRoles' => $statsRoles,
+            'chartStats' => $chartStats,
         ]);
     }
 }

@@ -105,56 +105,14 @@
 
 <!-- Content Row -->
 <div class="row">
-    <!-- Répartition des utilisateurs par rôle -->
+    <!-- Répartition des utilisateurs par rôle (Pie) -->
     <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Répartition des utilisateurs par rôle</h6>
-                <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                        aria-labelledby="dropdownMenuLink">
-                        <div class="dropdown-header">Actions:</div>
-                        <a class="dropdown-item" href="{{ path('app_utilisateur_index') }}">Voir tous les utilisateurs</a>
-                        <a class="dropdown-item" href="{{ path('app_role_index') }}">Gérer les rôles</a>
-                    </div>
-                </div>
             </div>
-            <!-- Card Body -->
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Rôle</th>
-                                <th>Nombre d'utilisateurs</th>
-                                <th>Pourcentage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for stat in statsRoles %}
-                            <tr>
-                                <td>{{ stat.nom }}</td>
-                                <td>{{ stat.nbUtilisateurs }}</td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" 
-                                            style="width: {{ (stat.nbUtilisateurs / totalUtilisateurs * 100)|round }}%"
-                                            aria-valuenow="{{ (stat.nbUtilisateurs / totalUtilisateurs * 100)|round }}" 
-                                            aria-valuemin="0" aria-valuemax="100">
-                                            {{ (stat.nbUtilisateurs / totalUtilisateurs * 100)|round }}%
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                <canvas id="rolesPie"></canvas>
             </div>
         </div>
     </div>
@@ -224,4 +182,14 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const labels = {{ chartStats.labels|json_encode|raw }};
+  const data = {{ chartStats.data|json_encode|raw }};
+  new Chart(document.getElementById('rolesPie'), {
+    type: 'pie',
+    data: { labels, datasets: [{ data, backgroundColor: ['#4e73df','#1cc88a','#36b9cc','#f6c23e','#e74a3b','#858796'] }] }
+  });
+</script>
 {% endblock %}

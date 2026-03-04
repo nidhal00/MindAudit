@@ -8,6 +8,10 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+
+        # Map JSON to TEXT for SQLite compatibility (désactivé pour MySQL)
+        # mapping_types:
+        #     json: text
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true

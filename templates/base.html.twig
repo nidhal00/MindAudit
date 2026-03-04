@@ -22,7 +22,7 @@
     {% block stylesheets %}{% endblock %}
 </head>
 
-<body id="page-top">
+<body id="page-top" data-turbo="false">
     {% if app.user %}
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -167,32 +167,38 @@
                             </div>
                         </li>
 
-                        <!-- Nav Item - Alerts -->
+                        <!-- Nav Item - Alerts (Notifications) -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <span id="notif-counter" class="badge badge-danger badge-counter" style="display:none"></span>
                             </a>
                             <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                            <div id="notif-menu" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                                 <h6 class="dropdown-header" style="background-color: #5dade2; border-color: #5dade2;">
-                                    Centre d'alertes
+                                    Centre de notifications
                                 </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary" style="background-color: #5dade2 !important;">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">{{ "now"|date("d M Y") }}</div>
-                                        <span class="font-weight-bold">Un nouveau rapport est disponible!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Voir toutes les alertes</a>
+                                <div id="notif-items">
+                                    <a class="dropdown-item text-center small text-gray-500" href="{{ path('app_notifications_index') }}">Aucune notification</a>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-center small text-gray-500" href="{{ path('app_notifications_index') }}">Voir toutes les notifications</a>
                             </div>
                         </li>
+
+                        <script>
+                            async function refreshNotif(){
+                                try {
+                                    const c = await fetch('{{ path('app_notifications_unread_count') }}', {headers: {'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json());
+                                    const counter = document.getElementById('notif-counter');
+                                    counter.style.display = (c.count>0)?'inline-block':'none';
+                                    counter.textContent = c.count>9? '9+': c.count;
+                                } catch(e) {}
+                            }
+                            document.addEventListener('DOMContentLoaded', refreshNotif);
+                            setInterval(refreshNotif, 30000);
+                        </script>
 
                         <div class="topbar-divider d-none d-sm-block" style="border-right-color: rgba(255, 255, 255, 0.3);"></div>
 
@@ -342,6 +348,6 @@
     </script>
 
     {% block javascripts %}{% endblock %}
-    {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {# Désactivé pour améliorer les performances: {% block importmap %}{{ importmap('app') }}{% endblock %} #}
 </body>
 </html>

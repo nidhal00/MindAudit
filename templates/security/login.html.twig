@@ -93,7 +93,9 @@
                                     </div>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="#" onclick="alert('Fonctionnalité à venir')">Mot de passe oublié ?</a>
+                                        <a class="small" href="{{ path('app_forgotten_password') }}">🔑 Mot de passe oublié ?</a>
+                                        <br>
+                                        <a class="small" href="{{ path('app_reset_password_with_code') }}">🔢 Entrer le code reçu par email</a>
                                     </div>
                                     <div class="text-center">
                                         <a class="small" href="{{ path('app_register') }}">Créer un compte !</a>

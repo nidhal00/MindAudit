@@ -6,9 +6,17 @@ use App\Entity\Role;
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
     public function load(ObjectManager $manager): void
     {
         // Création des 3 rôles principaux
@@ -53,7 +61,7 @@ class AppFixtures extends Fixture
         $admin->setNom('Admin');
         $admin->setPrenom('Super');
         $admin->setEmail('admin@mindaudit.com');
-        $admin->setPassword(password_hash('admin123', PASSWORD_BCRYPT));
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
         $admin->setRole($roleAdmin);
         $admin->setActif(true);
         $manager->persist($admin);
@@ -63,7 +71,7 @@ class AppFixtures extends Fixture
         $auditeur1->setNom('Dupont');
         $auditeur1->setPrenom('Jean');
         $auditeur1->setEmail('jean.dupont@mindaudit.com');
-        $auditeur1->setPassword(password_hash('password123', PASSWORD_BCRYPT));
+        $auditeur1->setPassword($this->passwordHasher->hashPassword($auditeur1, 'password123'));
         $auditeur1->setRole($roleAuditeur);
         $auditeur1->setActif(true);
         $manager->persist($auditeur1);
@@ -72,7 +80,7 @@ class AppFixtures extends Fixture
         $auditeur2->setNom('Martin');
         $auditeur2->setPrenom('Sophie');
         $auditeur2->setEmail('sophie.martin@mindaudit.com');
-        $auditeur2->setPassword(password_hash('password123', PASSWORD_BCRYPT));
+        $auditeur2->setPassword($this->passwordHasher->hashPassword($auditeur2, 'password123'));
         $auditeur2->setRole($roleAuditeur);
         $auditeur2->setActif(true);
         $manager->persist($auditeur2);
@@ -82,7 +90,7 @@ class AppFixtures extends Fixture
         $utilisateur1->setNom('Bernard');
         $utilisateur1->setPrenom('Pierre');
         $utilisateur1->setEmail('pierre.bernard@mindaudit.com');
-        $utilisateur1->setPassword(password_hash('password123', PASSWORD_BCRYPT));
+        $utilisateur1->setPassword($this->passwordHasher->hashPassword($utilisateur1, 'password123'));
         $utilisateur1->setRole($roleUtilisateur);
         $utilisateur1->setActif(true);
         $manager->persist($utilisateur1);
@@ -91,7 +99,7 @@ class AppFixtures extends Fixture
         $utilisateur2->setNom('Leroy');
         $utilisateur2->setPrenom('Marie');
         $utilisateur2->setEmail('marie.leroy@mindaudit.com');
-        $utilisateur2->setPassword(password_hash('password123', PASSWORD_BCRYPT));
+        $utilisateur2->setPassword($this->passwordHasher->hashPassword($utilisateur2, 'password123'));
         $utilisateur2->setRole($roleUtilisateur);
         $utilisateur2->setActif(true);
         $manager->persist($utilisateur2);
@@ -101,7 +109,7 @@ class AppFixtures extends Fixture
         $inactif->setNom('Dubois');
         $inactif->setPrenom('Luc');
         $inactif->setEmail('luc.dubois@mindaudit.com');
-        $inactif->setPassword(password_hash('password123', PASSWORD_BCRYPT));
+        $inactif->setPassword($this->passwordHasher->hashPassword($inactif, 'password123'));
         $inactif->setRole($roleUtilisateur);
         $inactif->setActif(false);
         $manager->persist($inactif);
