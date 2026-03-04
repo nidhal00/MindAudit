@@ -1,0 +1,49 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier Document{% endblock %}
+
+{% block body %}
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Modifier : {{ document.nom }}</h1>
+        <a href="{{ path('app_document_show', {'id': document.id}) }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="alert alert-info">
+                Les informations de ce document sont gérées automatiquement par le système d'audit. 
+                Vous pouvez modifier le statut manuellement si nécessaire via les actions de validation.
+            </div>
+            
+            <table class="table table-bordered">
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ document.nom }}</td>
+                </tr>
+                <tr>
+                    <th>Type</th>
+                    <td>{{ document.type }}</td>
+                </tr>
+                <tr>
+                    <th>Statut Actuel</th>
+                    <td>
+                        <span class="badge badge-{{ document.statut == 'valide' ? 'success' : (document.statut == 'rejete' ? 'danger' : 'warning') }}">
+                            {{ document.statut|capitalize }}
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="mt-4">
+                <form method="post" action="{{ path('app_document_validate', {'id': document.id}) }}" class="d-inline">
+                    <button class="btn btn-success">Valider</button>
+                </form>
+                <form method="post" action="{{ path('app_document_reject', {'id': document.id}) }}" class="d-inline">
+                    <button class="btn btn-danger">Rejeter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

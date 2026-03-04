@@ -1,0 +1,144 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails du Rôle{% endblock %}
+
+{% block body %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Détails du rôle</h1>
+    <div>
+        <a href="{{ path('app_admin_role_edit', {id: role.id}) }}" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i> Modifier
+        </a>
+        <a href="{{ path('app_admin_role_index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Informations du rôle</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%">Nom:</th>
+                        <td><span class="badge badge-info badge-lg">{{ role.nom }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Description:</th>
+                        <td>{{ role.description|default('Aucune description') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre d'utilisateurs:</th>
+                        <td><span class="badge badge-primary">{{ role.utilisateurs|length }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Date de création:</th>
+                        <td>{{ role.createdAt|date('d/m/Y à H:i') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Permissions ({{ role.permissions|length }})</h6>
+            </div>
+            <div class="card-body">
+                {% if role.permissions|length > 0 %}
+                    <div class="row">
+                        {% for permission in role.permissions %}
+                            <div class="col-md-6 mb-2">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span class="badge badge-secondary">{{ permission }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune permission assignée à ce rôle</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Utilisateurs ({{ role.utilisateurs|length }})</h6>
+            </div>
+            <div class="card-body">
+                {% if role.utilisateurs|length > 0 %}
+                    <ul class="list-unstyled">
+                        {% for utilisateur in role.utilisateurs %}
+                            <li class="mb-2">
+                                <a href="{{ path('app_admin_utilisateur_show', {id: utilisateur.id}) }}">
+                                    <i class="fas fa-user"></i>
+                                    {{ utilisateur.nomComplet }}
+                                </a>
+                                {% if not utilisateur.actif %}
+                                    <span class="badge badge-danger badge-sm">Inactif</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Aucun utilisateur avec ce rôle</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ path('app_admin_role_edit', {id: role.id}) }}" class="btn btn-warning btn-block">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                <button type="button" class="btn btn-danger btn-block mt-2" data-toggle="modal" data-target="#deleteModal">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la suppression</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer le rôle <strong>{{ role.nom }}</strong> ?
+                {% if role.utilisateurs|length > 0 %}
+                    <br><br>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Ce rôle est attribué à {{ role.utilisateurs|length }} utilisateur(s). Vous ne pouvez pas le supprimer.
+                    </div>
+                {% else %}
+                    <br><br>
+                    <span class="text-danger">Cette action est irréversible.</span>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                {% if role.utilisateurs|length == 0 %}
+                    <form method="post" action="{{ path('app_admin_role_delete', {id: role.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ role.id) }}">
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

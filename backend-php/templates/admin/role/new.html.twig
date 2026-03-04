@@ -1,0 +1,51 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouveau Rôle{% endblock %}
+
+{% block body %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Nouveau Rôle</h1>
+    <a href="{{ path('app_admin_role_index') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> Retour à la liste
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Informations du rôle</h6>
+    </div>
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.nom) }}
+                {{ form_widget(form.nom) }}
+                {{ form_errors(form.nom) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.permissions) }}
+                <div class="border p-3 rounded">
+                    {{ form_widget(form.permissions) }}
+                </div>
+                {{ form_errors(form.permissions) }}
+                <small class="form-text text-muted">Sélectionnez les permissions à attribuer à ce rôle</small>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Créer le rôle
+                </button>
+                <a href="{{ path('app_admin_role_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

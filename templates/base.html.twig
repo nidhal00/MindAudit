@@ -19,6 +19,7 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('sb-admin-2/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/modern_ui.css') }}" rel="stylesheet">
     {% block stylesheets %}{% endblock %}
 
 </head>
@@ -80,7 +81,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout</a>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
                 </div>
             </div>
         </div>
@@ -95,6 +96,9 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('sb-admin-2/js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{{ asset('sb-admin-2/vendor/chart.js/Chart.min.js') }}"></script>
 
     {% block javascripts %}{% endblock %}
 

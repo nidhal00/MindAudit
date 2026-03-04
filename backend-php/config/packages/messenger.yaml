@@ -1,0 +1,8 @@
+framework:
+    messenger:
+        transports:
+            async: 'doctrine://default'
+            sync: 'sync://'
+
+        routing:
+            # No routing defined

@@ -1,0 +1,132 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails Utilisateur{% endblock %}
+
+{% block body %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Détails de l'utilisateur</h1>
+    <div>
+        <a href="{{ path('app_admin_utilisateur_edit', {id: utilisateur.id}) }}" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i> Modifier
+        </a>
+        <a href="{{ path('app_admin_utilisateur_index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Informations personnelles</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%">Nom complet:</th>
+                        <td>{{ utilisateur.nomComplet }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ utilisateur.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Rôle:</th>
+                        <td><span class="badge badge-info badge-lg">{{ utilisateur.role.nom }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Statut:</th>
+                        <td>
+                            {% if utilisateur.actif %}
+                                <span class="badge badge-success badge-lg">Actif</span>
+                            {% else %}
+                                <span class="badge badge-danger badge-lg">Inactif</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date de création:</th>
+                        <td>{{ utilisateur.createdAt|date('d/m/Y à H:i') }}</td>
+                    </tr>
+                    {% if utilisateur.oauthProvider %}
+                        <tr>
+                            <th>Authentification OAuth:</th>
+                            <td><span class="badge badge-secondary">{{ utilisateur.oauthProvider }}</span></td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Permissions du rôle</h6>
+            </div>
+            <div class="card-body">
+                {% if utilisateur.role.permissions|length > 0 %}
+                    <ul class="list-unstyled">
+                        {% for permission in utilisateur.role.permissions %}
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success"></i>
+                                {{ permission }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Aucune permission assignée</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ path('app_admin_utilisateur_edit', {id: utilisateur.id}) }}" class="btn btn-warning btn-block">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                <form method="post" action="{{ path('app_admin_utilisateur_toggle', {id: utilisateur.id}) }}" class="mt-2">
+                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ utilisateur.id) }}">
+                    <button type="submit" class="btn btn-{{ utilisateur.actif ? 'secondary' : 'success' }} btn-block">
+                        <i class="fas fa-{{ utilisateur.actif ? 'ban' : 'check' }}"></i>
+                        {{ utilisateur.actif ? 'Désactiver' : 'Activer' }}
+                    </button>
+                </form>
+                <button type="button" class="btn btn-danger btn-block mt-2" data-toggle="modal" data-target="#deleteModal">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la suppression</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{ utilisateur.nomComplet }}</strong> ?
+                <br><br>
+                <span class="text-danger">Cette action est irréversible.</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <form method="post" action="{{ path('app_admin_utilisateur_delete', {id: utilisateur.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

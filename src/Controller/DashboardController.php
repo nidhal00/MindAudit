@@ -2,25 +2,36 @@
 
 namespace App\Controller;
 
-use App\Repository\AuditRepository;
-use App\Repository\QuestionAuditRepository;
-use App\Repository\UserRepository;
+use App\Repository\ReclamationRepository;
+use App\Repository\ReponseReclamationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DashboardController extends AbstractController
 {
-    #[Route('/admin', name: 'app_dashboard')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function index(AuditRepository $auditRepository, QuestionAuditRepository $questionRepository, UserRepository $userRepository): Response
+    #[Route('/dashboard', name: 'app_dashboard')]
+    public function index(ReclamationRepository $reclamationRepository, ReponseReclamationRepository $reponseReclamationRepository): Response
     {
+        $totalReclamations = $reclamationRepository->count([]);
+        $totalReponses = $reponseReclamationRepository->count([]);
+
+        $byStatut = $reclamationRepository->countByStatut();
+        $byPriorite = $reclamationRepository->countByPriorite();
+
+        $reclamationsByDate = $reclamationRepository->countByDate(30);
+        $reponsesByDate = $reponseReclamationRepository->countByDate(30);
+
+        $reponsesByAuteurType = $reponseReclamationRepository->countByAuteurType();
+
         return $this->render('dashboard/index.html.twig', [
-            'audit_count' => $auditRepository->count([]),
-            'question_count' => $questionRepository->count([]),
-            'user_count' => $userRepository->count([]),
-            'public_audit_count' => $auditRepository->count(['status' => 'public']),
+            'totalReclamations' => $totalReclamations,
+            'totalReponses' => $totalReponses,
+            'byStatut' => $byStatut,
+            'byPriorite' => $byPriorite,
+            'reclamationsByDate' => $reclamationsByDate,
+            'reponsesByDate' => $reponsesByDate,
+            'reponsesByAuteurType' => $reponsesByAuteurType,
         ]);
     }
 }

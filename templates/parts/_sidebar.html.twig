@@ -23,31 +23,62 @@
 
     <!-- Heading -->
     <div class="sidebar-heading">
-        Admin
+        Gestion
     </div>
 
-    <!-- Nav Item - Audits -->
-    <li class="nav-item">
-        <a class="nav-link" href="{{ path('app_admin_audit_index') }}">
-            <i class="fas fa-fw fa-clipboard-list"></i>
-            <span>Audits</span></a>
+    {% set route = app.request.attributes.get('_route') %}
+
+    <li class="nav-item {{ route starts with 'app_reclamation' ? 'active' : '' }}">
+        <a class="nav-link" href="{{ path('app_reclamation_index') }}">
+            <i class="fas fa-fw fa-exclamation-circle"></i>
+            <span>Réclamations</span>
+        </a>
     </li>
 
-    <!-- Nav Item - Questions -->
-    <li class="nav-item">
-        <a class="nav-link" href="{{ path('app_admin_question_index') }}">
-            <i class="fas fa-fw fa-question-circle"></i>
-            <span>Questions</span></a>
+    <li class="nav-item {{ route starts with 'app_reponse_reclamation' ? 'active' : '' }}">
+        <a class="nav-link" href="{{ path('app_reponse_reclamation_index') }}">
+            <i class="fas fa-fw fa-reply"></i>
+            <span>Réponses</span>
+        </a>
     </li>
 
-    <!-- Nav Item - Audits (Read Only/Track) -->
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Rapports
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ path('app_front_audit_index') }}">
-            <i class="fas fa-fw fa-clipboard-list"></i>
-            <span>My Audits</span></a>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+            aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Pages</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Login Screens:</h6>
+                <a class="collapse-item" href="login.html">Login</a>
+                <a class="collapse-item" href="register.html">Register</a>
+                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">Other Pages:</h6>
+                <a class="collapse-item" href="404.html">404 Page</a>
+                <a class="collapse-item" href="blank.html">Blank Page</a>
+            </div>
+        </div>
     </li>
 
+    <!-- Nav Item - Charts -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_dashboard') }}">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Statistiques</span></a>
+    </li>
 
+    {# Keep other SB Admin demo links removed for production admin #}
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
@@ -55,8 +86,12 @@
     <!-- Sidebar Toggler (Sidebar) -->
     <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>    <!-- Sidebar Message -->
+    <div class="sidebar-card d-none d-lg-flex">
+        <img class="sidebar-card-illustration mb-2" src="{{ asset('sb-admin-2/img/undraw_rocket.svg') }}" alt="...">
+        <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
+        <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
     </div>
-
 
 
 </ul>
