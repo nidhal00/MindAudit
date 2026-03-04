@@ -38,18 +38,14 @@ class PasswordResetController extends AbstractController
             if ($email) {
                 $user = $userRepository->findOneBy(['email' => $email]);
 
-                // Pour des raisons de sécurité, on ne révèle pas l'existence de l'email
-                $message = "✅ Un email a été envoyé (si l'adresse existe)";
-                $messageType = 'success';
+                // Bouton pressé: lien ou code
+                $clicked = $form->get('send_code')->isClicked() ? 'code' : 'link';
 
                 if ($user instanceof Utilisateur) {
                     // Génère un token
                     $ipAddress = $request->getClientIp() ?? '';
                     $userAgent = $request->headers->get('User-Agent') ?? '';
                     $resetToken = $resetService->generateResetToken($user, $ipAddress, $userAgent);
-
-                    // Bouton pressé: lien ou code
-                    $clicked = $form->get('send_code')->isClicked() ? 'code' : 'link';
 
                     if ($clicked === 'link') {
                         // Générer le lien absolu + envoyer
@@ -58,12 +54,22 @@ class PasswordResetController extends AbstractController
                         ], UrlGeneratorInterface::ABSOLUTE_URL);
                         $resetService->sendResetEmail($resetToken, $resetLink);
 
-                        // Optionnel: message spécifique
                         $message = '✅ Un email a été envoyé avec un lien de réinitialisation (valide 15 minutes)';
+                        $messageType = 'success';
                     } else {
-                        // Envoyer juste le code et rediriger vers la page de saisie du code
+                        // Envoyer le code par email et rediriger vers la page de saisie
                         $resetService->sendResetCodeEmail($resetToken);
+                        $this->addFlash('success', '✅ Un code a été envoyé à votre adresse email (valide 15 minutes)');
                         return $this->redirectToRoute('app_reset_password_with_code');
+                    }
+                } else {
+                    // Pour des raisons de sécurité, on affiche le même message
+                    if ($clicked === 'code') {
+                        $this->addFlash('success', '✅ Si cette adresse existe, un code a été envoyé');
+                        return $this->redirectToRoute('app_reset_password_with_code');
+                    } else {
+                        $message = "✅ Si cette adresse existe, un email a été envoyé";
+                        $messageType = 'success';
                     }
                 }
             }
