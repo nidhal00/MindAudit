@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Utilisateur;
+use App\Repository\RoleRepository;
+use App\Repository\UtilisateurRepository;
+use App\Service\LoginRedirectService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+class HomeController extends AbstractController
+{
+    #[Route('/', name: 'app_home')]
+    public function index(LoginRedirectService $loginRedirectService): Response
+    {
+        // Si l'utilisateur est connecté, le rediriger vers la gestion des utilisateurs
+        if ($this->getUser() instanceof Utilisateur) {
+            $user = $this->getUser();
+            $roles = $user->getRoles();
+            
+            // Si admin ou auditeur, rediriger vers la gestion des utilisateurs
+            if (in_array('ROLE_ADMINISTRATEUR', $roles) || in_array('ROLE_AUDITEUR', $roles)) {
+                return $this->redirectToRoute('app_utilisateur_index');
+            }
+            
+            // Sinon, rediriger vers l'espace utilisateur approprié
+            $redirectUrl = $loginRedirectService->getRedirectUrl($user);
+            return $this->redirect($redirectUrl);
+        }
+
+        // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+        return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/dashboard', name: 'app_dashboard')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function dashboard(
+        UtilisateurRepository $utilisateurRepository,
+        RoleRepository $roleRepository,
+        LoginRedirectService $loginRedirectService
+    ): Response {
+        // Vérifier si l'utilisateur a le bon rôle pour accéder au dashboard
+        $user = $this->getUser();
+        if ($user instanceof Utilisateur) {
+            $roles = $user->getRoles();
+            
+            // Si l'utilisateur n'est ni admin ni auditeur, le rediriger vers son espace
+            if (!in_array('ROLE_ADMINISTRATEUR', $roles) && !in_array('ROLE_AUDITEUR', $roles)) {
+                $redirectUrl = $loginRedirectService->getRedirectUrl($user);
+                return $this->redirect($redirectUrl);
+            }
+        }
+
+        $totalUtilisateurs = count($utilisateurRepository->findAll());
+        $utilisateursActifs = $utilisateurRepository->countActifs();
+        $totalRoles = count($roleRepository->findAll());
+        $statsRoles = $roleRepository->countUtilisateursParRole();
+
+        $utilisateursInactifs = $totalUtilisateurs - $utilisateursActifs;
+
+        // Filtrer pour ne garder que les 3 rôles principaux
+        $allowedRoles = ['Administrateur', 'Auditeur', 'Utilisateur'];
+        $filteredStatsRoles = array_filter($statsRoles, function($s) use ($allowedRoles) {
+            return in_array($s['nom'], $allowedRoles);
+        });
+
+        // Préparer les datasets pour Chart.js (labels + data)
+        $chartStats = [
+            'labels' => array_values(array_map(fn($s) => $s['nom'], $filteredStatsRoles)),
+            'data' => array_values(array_map(fn($s) => (int)$s['nbUtilisateurs'], $filteredStatsRoles)),
+        ];
+
+        return $this->render('home/dashboard.html.twig', [
+            'totalUtilisateurs' => $totalUtilisateurs,
+            'utilisateursActifs' => $utilisateursActifs,
+            'utilisateursInactifs' => $utilisateursInactifs,
+            'totalRoles' => $totalRoles,
+            'statsRoles' => $statsRoles,
+            'filteredStatsRoles' => $filteredStatsRoles,
+            'chartStats' => $chartStats,
+        ]);
+    }
+}

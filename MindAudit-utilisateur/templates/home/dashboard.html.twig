@@ -1,0 +1,325 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - MindAudit{% endblock %}
+
+{% block body %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    <div>
+        <a href="{{ path('app_report_utilisateurs_pdf') }}" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2" target="_blank">
+            <i class="fas fa-file-pdf fa-sm text-white-50"></i> Exporter en PDF
+        </a>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Générer un rapport
+        </a>
+    </div>
+</div>
+
+<style>
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animated-card {
+        animation: slideUpFade 0.6s ease-out forwards;
+        opacity: 0;
+    }
+    .chart-container {
+        animation: slideUpFade 0.8s ease-out 0.4s forwards;
+        opacity: 0;
+    }
+    .quick-actions-container {
+        animation: slideUpFade 0.8s ease-out 0.5s forwards;
+        opacity: 0;
+    }
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+</style>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Total Utilisateurs Card -->
+    <div class="col-xl-3 col-md-6 mb-4 animated-card" style="animation-delay: 0.1s;">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Utilisateurs
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalUtilisateurs }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Utilisateurs Actifs Card -->
+    <div class="col-xl-3 col-md-6 mb-4 animated-card" style="animation-delay: 0.2s;">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Utilisateurs Actifs
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ utilisateursActifs }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Utilisateurs Inactifs Card -->
+    <div class="col-xl-3 col-md-6 mb-4 animated-card" style="animation-delay: 0.3s;">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Utilisateurs Inactifs
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ utilisateursInactifs }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-times fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Rôles Card -->
+    <div class="col-xl-3 col-md-6 mb-4 animated-card" style="animation-delay: 0.4s;">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Total Rôles
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalRoles }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Répartition des utilisateurs par rôle (Pie) -->
+    <div class="col-xl-8 col-lg-7 chart-container">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Répartition des utilisateurs par rôle</h6>
+            </div>
+            <div class="card-body">
+                <div style="height: 450px; width: 100%; position: relative;">
+                    <canvas id="rolesPie"></canvas>
+                </div>
+                <hr>
+                <div class="row text-center mt-4">
+                    {% set colors = ['text-primary', 'text-success', 'text-info'] %}
+                    {% for stat in filteredStatsRoles %}
+                        {% set percent = totalUtilisateurs > 0 ? ((stat.nbUtilisateurs / totalUtilisateurs) * 100)|round : 0 %}
+                        <div class="col-sm-4 mb-3">
+                            <h4 class="small font-weight-bold {{ colors[loop.index0 % 3] }} text-uppercase mb-1">{{ stat.nom }}</h4>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">{{ stat.nbUtilisateurs }} <small>utilisateurs</small></div>
+                            <div class="text-muted">{{ percent }}%</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="col-xl-4 col-lg-5 quick-actions-container">
+        <div class="card shadow mb-4">
+            <!-- Card Header -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Actions rapides</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="mb-3">
+                    <a href="{{ path('app_utilisateur_new') }}" class="btn btn-primary btn-icon-split btn-block">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        <span class="text">Créer un utilisateur</span>
+                    </a>
+                </div>
+                <div class="mb-3">
+                    <a href="{{ path('app_role_new') }}" class="btn btn-success btn-icon-split btn-block">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-plus-circle"></i>
+                        </span>
+                        <span class="text">Créer un rôle</span>
+                    </a>
+                </div>
+                <div class="mb-3">
+                    <a href="{{ path('app_utilisateur_index') }}" class="btn btn-info btn-icon-split btn-block">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <span class="text">Rechercher</span>
+                    </a>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <a href="{{ path('app_role_index') }}" class="btn btn-warning btn-icon-split btn-block">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-cog"></i>
+                        </span>
+                        <span class="text">Gérer les rôles</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique Statut des Comptes -->
+        <div class="card shadow mb-4 animated-card" style="animation-delay: 0.6s;">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Statut des Comptes</h6>
+            </div>
+            <div class="card-body">
+                <div style="height: 250px; position: relative;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> Actifs ({{ utilisateursActifs }})
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-danger"></i> Inactifs ({{ utilisateursInactifs }})
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const labels = {{ chartStats.labels|json_encode|raw }};
+  const data = {{ chartStats.data|json_encode|raw }};
+  const myPieChart = new Chart(document.getElementById('rolesPie'), {
+    type: 'pie',
+    data: { 
+        labels, 
+        datasets: [{ 
+            data, 
+            backgroundColor: ['#4e73df','#1cc88a','#36b9cc'],
+            hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+            borderWidth: 2
+        }] 
+    },
+    options: {
+        maintainAspectRatio: false,
+        cutout: '10%',
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { padding: 20, font: { family: "'Nunito', sans-serif", size: 14 } }
+            }
+        },
+        animation: {
+            animateScale: true,
+            animateRotate: true,
+            duration: 2000,
+            easing: 'easeOutQuart'
+        }
+    }
+  });
+
+  // Animation de rotation continue (native Chart.js)
+  let currentRotation = 0;
+  let isHovered = false;
+
+  document.getElementById('rolesPie').addEventListener('mouseenter', () => isHovered = true);
+  document.getElementById('rolesPie').addEventListener('mouseleave', () => isHovered = false);
+
+  function spinChart() {
+      if (!isHovered) {
+          currentRotation += 0.2; // Vitesse de rotation
+          if (currentRotation >= 360) currentRotation = 0;
+          myPieChart.options.rotation = currentRotation;
+          myPieChart.update('none'); // Met à jour sans redéclencher les autres animations
+      }
+      requestAnimationFrame(spinChart);
+  }
+
+  // Démarrer la rotation après l'animation initiale
+  setTimeout(spinChart, 2000);
+
+  // Deuxième Graphique : Statut des comptes (Doughnut)
+  const statusCtx = document.getElementById('statusChart');
+  const myStatusChart = new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Actifs', 'Inactifs'],
+      datasets: [{
+        data: [{{ utilisateursActifs }}, {{ utilisateursInactifs }}],
+        backgroundColor: ['#1cc88a', '#e74a3b'],
+        hoverBackgroundColor: ['#17a673', '#e02d1b'],
+        hoverBorderColor: "rgba(234, 236, 244, 1)",
+        borderWidth: 2
+      }],
+    },
+    options: {
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: {
+          display: false // Légende personnalisée en HTML en dessous
+        }
+      },
+      animation: {
+          animateScale: true,
+          animateRotate: true,
+          duration: 1500,
+          easing: 'easeOutCirc'
+      }
+    },
+  });
+
+  // Animation de rotation continue (native Chart.js) pour le 2ème graphique
+  let currentStatusRotation = 0;
+  let isStatusHovered = false;
+
+  document.getElementById('statusChart').addEventListener('mouseenter', () => isStatusHovered = true);
+  document.getElementById('statusChart').addEventListener('mouseleave', () => isStatusHovered = false);
+
+  function spinStatusChart() {
+      if (!isStatusHovered) {
+          currentStatusRotation -= 0.3; // Tourne dans l'autre sens
+          if (currentStatusRotation <= -360) currentStatusRotation = 0;
+          myStatusChart.options.rotation = currentStatusRotation;
+          myStatusChart.update('none');
+      }
+      requestAnimationFrame(spinStatusChart);
+  }
+
+  // Démarrer la rotation du 2ème graphique
+  setTimeout(spinStatusChart, 1500);
+</script>
+{% endblock %}

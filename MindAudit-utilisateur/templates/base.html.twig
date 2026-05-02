@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>{% block title %}MindAudit{% endblock %}</title>
+    
+    <!-- Custom fonts for this template-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5dade2;
+            --secondary-color: #3498db;
+        }
+
+        /* Animations globales */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Effet Premium pour les cartes */
+        .card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: none !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+            border-radius: 12px !important;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+        }
+
+        /* Amélioration des icônes */
+        .fas, .fab {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .fas, .card:hover .fab {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        /* Boutons personnalisés */
+        .btn-primary {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            border-radius: 50px !important;
+            padding: 10px 25px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(93, 173, 226, 0.4) !important;
+        }
+
+        .btn-outline-primary {
+            border-radius: 50px !important;
+            border-width: 2px !important;
+            font-weight: 600 !important;
+        }
+
+        /* Titres */
+        h1, h2, h3, h4, h5 {
+            font-family: 'Nunito', sans-serif;
+            color: #2c3e50;
+        }
+    </style>
+    
+    <!-- Custom styles for this template-->
+    <link href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <!-- Custom colors for MindAudit -->
+    <link href="{{ asset('css/custom-admin.css') }}" rel="stylesheet">
+    
+    {% block stylesheets %}{% endblock %}
+    <style>
+        /* Animation de fond (Zoom subtil) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at center, #ffffff 0%, #eaeff5 100%);
+            animation: backgroundZoom 15s infinite alternate ease-in-out;
+        }
+        @keyframes backgroundZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+        /* Assurer que le fond par défaut est transparent pour voir l'effet */
+        #wrapper, #content-wrapper, #content {
+            background-color: transparent !important;
+        }
+    </style>
+</head>
+
+<body id="page-top" data-turbo="false">
+    {% if app.user %}
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background: linear-gradient(180deg, #2c5f7c 0%, #1a4d66 100%);">
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ path('app_home') }}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">MindAudit</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            {% if is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_AUDITEUR') %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ path('app_dashboard') }}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Gestion
+            </div>
+
+            <!-- Nav Item - Utilisateurs -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_utilisateur_index') }}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Utilisateurs</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Rôles -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_role_index') }}">
+                    <i class="fas fa-fw fa-user-shield"></i>
+                    <span>Rôles</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ path('app_user_space') }}">
+                    <i class="fas fa-fw fa-home"></i>
+                    <span>Mon Espace</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Mon Compte
+            </div>
+
+            <!-- Nav Item - Profil -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_user_edit_profile') }}">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Mon Profil</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Audits -->
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="alert('Fonctionnalité à venir')">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Mes Audits</span>
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+            <!-- Sidebar - Logout Button -->
+            <div class="sidebar-card d-none d-lg-flex">
+                <a href="{{ path('app_logout') }}" class="btn btn-danger btn-sm btn-block">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
+                    Déconnexion
+                </a>
+            </div>
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top shadow" style="background-color: #5dade2 !important;">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3" style="color: white;">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Search -->
+                    <form action="{{ path('app_search_page') }}" method="GET" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="position: relative;">
+                        <div class="input-group">
+                            <input type="text" name="q" id="global-search-input" class="form-control bg-light border-0 small" placeholder="Rechercher un utilisateur (nom, email)..." aria-label="Search" aria-describedby="basic-addon2" autocomplete="off">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit" style="background-color: #3498db; border-color: #3498db;" title="Rechercher">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                                <a href="{{ path('app_dashboard') }}" class="btn btn-light border" title="Retour au tableau de bord">
+                                    <i class="fas fa-home fa-sm text-gray-600"></i>
+                                </a>
+                                <a href="#" id="btn-reset-context" class="btn btn-light border" title="Réinitialiser / Retour à la section">
+                                    <i class="fas fa-redo fa-sm text-gray-600"></i>
+                                </a>
+                                <script>
+                                    (function() {
+                                        var path = window.location.pathname;
+                                        var resetUrl = '/dashboard'; // par défaut
+
+                                        if (path.startsWith('/utilisateur')) {
+                                            resetUrl = '/utilisateur';
+                                        } else if (path.startsWith('/role')) {
+                                            resetUrl = '/role';
+                                        } else if (path.startsWith('/espace-utilisateur')) {
+                                            resetUrl = '/espace-utilisateur';
+                                        } else if (path.startsWith('/reports')) {
+                                            resetUrl = '/dashboard';
+                                        } else if (path.startsWith('/search')) {
+                                            resetUrl = '/search';
+                                        } else if (path.startsWith('/notifications')) {
+                                            resetUrl = '/notifications';
+                                        } else if (path.startsWith('/audit')) {
+                                            resetUrl = '/audit';
+                                        }
+
+                                        document.getElementById('btn-reset-context').setAttribute('href', resetUrl);
+                                    })();
+                                </script>
+                            </div>
+                        </div>
+                        <!-- Résultats de recherche AJAX -->
+                        <div id="global-search-results" class="dropdown-menu shadow animated--fade-in" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 300px; overflow-y: auto; z-index: 1000;">
+                        </div>
+                    </form>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Rechercher..." aria-label="Search" aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+                        <!-- Nav Item - Alerts (Notifications) -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <!-- Counter - Alerts -->
+                                <span id="notif-counter" class="badge badge-danger badge-counter" style="display:none"></span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div id="notif-menu" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header" style="background-color: #5dade2; border-color: #5dade2;">
+                                    Centre de notifications
+                                </h6>
+                                <div id="notif-items">
+                                    <a class="dropdown-item text-center small text-gray-500" href="{{ path('app_notifications_index') }}">Aucune notification</a>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-center small text-gray-500" href="{{ path('app_notifications_index') }}">Voir toutes les notifications</a>
+                            </div>
+                        </li>
+
+                        <script>
+                            async function refreshNotif(){
+                                try {
+                                    const c = await fetch('{{ path('app_notifications_unread_count') }}', {headers: {'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json());
+                                    const counter = document.getElementById('notif-counter');
+                                    counter.style.display = (c.count>0)?'inline-block':'none';
+                                    counter.textContent = c.count>9? '9+': c.count;
+                                } catch(e) {}
+                            }
+                            async function loadNotifsDropdown() {
+                                try {
+                                    const data = await fetch('{{ path('app_notifications_latest') }}', {headers: {'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json());
+                                    const container = document.getElementById('notif-items');
+                                    
+                                    if(data.length === 0) {
+                                        container.innerHTML = '<a class="dropdown-item text-center small text-gray-500" href="{{ path('app_notifications_index') }}">Aucune notification</a>';
+                                        return;
+                                    }
+
+                                    let html = '';
+                                    data.forEach(n => {
+                                        const iconClass = n.type === 'success' ? 'fa-check-circle text-success' : 
+                                                          n.type === 'warning' ? 'fa-exclamation-triangle text-warning' : 
+                                                          n.type === 'error' ? 'fa-times-circle text-danger' : 
+                                                          'fa-info-circle text-primary';
+                                        
+                                        const bgClass = n.isRead ? '' : 'bg-light';
+                                        const fontWeight = n.isRead ? '' : 'font-weight-bold';
+
+                                        html += `
+                                            <a class="dropdown-item d-flex align-items-center notif-item ${bgClass}" href="#" data-id="${n.id}">
+                                                <div class="mr-3">
+                                                    <div class="icon-circle bg-white shadow-sm border">
+                                                        <i class="fas ${iconClass}"></i>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="small text-gray-500">${n.date}</div>
+                                                    <span class="${fontWeight}">${n.message}</span>
+                                                </div>
+                                            </a>
+                                        `;
+                                    });
+                                    html += '<a class="dropdown-item text-center small text-gray-500 shadow-sm" href="{{ path('app_notifications_index') }}">Voir toutes les notifications</a>';
+                                    container.innerHTML = html;
+
+                                    // Add event listeners for marking as read
+                                    document.querySelectorAll('.notif-item').forEach(item => {
+                                        item.addEventListener('click', async function(e) {
+                                            e.preventDefault();
+                                            const id = this.dataset.id;
+                                            await fetch('/notifications/' + id + '/read', {
+                                                method: 'POST',
+                                                headers: {'X-Requested-With':'XMLHttpRequest'}
+                                            });
+                                            this.classList.remove('bg-light');
+                                            this.querySelector('span').classList.remove('font-weight-bold');
+                                            refreshNotif();
+                                        });
+                                    });
+
+                                } catch(e) {}
+                            }
+
+                            document.addEventListener('DOMContentLoaded', () => {
+                                refreshNotif();
+                                document.getElementById('alertsDropdown').addEventListener('click', loadNotifsDropdown);
+                                
+                                // Live Search Logic
+                                const searchInput = document.getElementById('global-search-input');
+                                const searchResults = document.getElementById('global-search-results');
+                                let searchTimeout;
+
+                                if (searchInput) {
+                                    searchInput.addEventListener('input', function() {
+                                        clearTimeout(searchTimeout);
+                                        const query = this.value;
+
+                                        if (query.length < 2) {
+                                            searchResults.style.display = 'none';
+                                            return;
+                                        }
+
+                                        searchTimeout = setTimeout(async () => {
+                                            try {
+                                                const data = await fetch('/api/search?q=' + encodeURIComponent(query), {headers: {'X-Requested-With':'XMLHttpRequest'}}).then(r => r.json());
+                                                
+                                                if (data.length === 0) {
+                                                    searchResults.innerHTML = '<span class="dropdown-item text-muted small">Aucun résultat trouvé</span>';
+                                                } else {
+                                                    let html = '';
+                                                    data.forEach(user => {
+                                                        const badge = user.role === 'Administrateur' ? 'badge-danger' : 'badge-primary';
+                                                        html += `
+                                                            <a class="dropdown-item d-flex align-items-center" href="${user.url}">
+                                                                <div class="mr-3">
+                                                                    <div class="icon-circle bg-light border">
+                                                                        <i class="fas fa-user text-gray-600"></i>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="font-weight-bold text-gray-800">${user.nomComplet}</span><br>
+                                                                    <small class="text-gray-500">${user.email}</small>
+                                                                    <span class="badge ${badge} ml-2">${user.role}</span>
+                                                                </div>
+                                                            </a>
+                                                        `;
+                                                    });
+                                                    searchResults.innerHTML = html;
+                                                }
+                                                searchResults.style.display = 'block';
+                                            } catch (e) {
+                                                console.error(e);
+                                            }
+                                        }, 300); // 300ms debounce
+                                    });
+
+                                    // Close dropdown when clicking outside
+                                    document.addEventListener('click', function(e) {
+                                        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                                            searchResults.style.display = 'none';
+                                        }
+                                    });
+                                }
+                            });
+                            setInterval(refreshNotif, 30000);
+                        </script>
+
+                        <div class="topbar-divider d-none d-sm-block" style="border-right-color: rgba(255, 255, 255, 0.3);"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline small" style="color: white;">{{ app.user.nomComplet }}</span>
+                                <img class="img-profile rounded-circle" src="https://ui-avatars.com/api/?name={{ app.user.nomComplet|url_encode }}&background=4e73df&color=fff">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profil
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Paramètres
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ path('app_logout') }}">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% block body %}{% endblock %}
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; MindAudit {{ "now"|date("Y") }}</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    {% else %}
+    <!-- Non-authenticated users -->
+    <div class="container">
+        <div class="py-4">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body_unauthenticated %}{% endblock %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script>
+        (function($) {
+            "use strict";
+
+            // Toggle the side navigation
+            $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
+                $("body").toggleClass("sidebar-toggled");
+                $(".sidebar").toggleClass("toggled");
+                if ($(".sidebar").hasClass("toggled")) {
+                    $('.sidebar .collapse').collapse('hide');
+                };
+            });
+
+            // Close any open menu accordions when window is resized below 768px
+            $(window).resize(function() {
+                if ($(window).width() < 768) {
+                    $('.sidebar .collapse').collapse('hide');
+                };
+            });
+
+            // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
+            $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
+                if ($(window).width() > 768) {
+                    var e0 = e.originalEvent,
+                        delta = e0.wheelDelta || -e0.detail;
+                    this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+                    e.preventDefault();
+                }
+            });
+
+            // Scroll to top button appear
+            $(document).on('scroll', function() {
+                var scrollDistance = $(this).scrollTop();
+                if (scrollDistance > 100) {
+                    $('.scroll-to-top').fadeIn();
+                } else {
+                    $('.scroll-to-top').fadeOut();
+                }
+            });
+
+            // Smooth scrolling using jQuery easing
+            $(document).on('click', 'a.scroll-to-top', function(e) {
+                var $anchor = $(this);
+                $('html, body').stop().animate({
+                    scrollTop: ($($anchor.attr('href')).offset().top)
+                }, 1000, 'easeInOutExpo');
+                e.preventDefault();
+            });
+
+        })(jQuery);
+    </script>
+
+    {% block javascripts %}{% endblock %}
+    {# Désactivé pour améliorer les performances: {% block importmap %}{{ importmap('app') }}{% endblock %} #}
+</body>
+</html>
