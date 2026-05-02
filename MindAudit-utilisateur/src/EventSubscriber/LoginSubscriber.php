@@ -40,7 +40,11 @@ class LoginSubscriber implements EventSubscriberInterface
                 ->subject('Alerte de sécurité : Nouvelle connexion')
                 ->text('L\'utilisateur ' . $user->getEmail() . ' vient de se connecter avec succès au tableau de bord MindAudit.');
             
-            $this->mailer->send($email);
+            try {
+                $this->mailer->send($email);
+            } catch (\Exception $e) {
+                // On ignore l'erreur d'envoi pour ne pas bloquer la connexion
+            }
 
             // 2. Créer la notification en base
             $notification = new Notification();

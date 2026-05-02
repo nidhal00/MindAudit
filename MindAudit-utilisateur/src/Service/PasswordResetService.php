@@ -66,7 +66,11 @@ class PasswordResetService
                 'expiresAt' => null,
             ]);
 
-        $this->mailer->send($email);
+        try {
+            $this->mailer->send($email);
+        } catch (\Exception $e) {
+            error_log('Erreur envoi code de réinitialisation : ' . $e->getMessage());
+        }
     }
 
     /**
