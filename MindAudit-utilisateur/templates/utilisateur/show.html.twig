@@ -106,6 +106,9 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
+                    <a href="{{ path('app_utilisateur_export', {'id': utilisateur.id}) }}" class="btn btn-success" target="_blank">
+                        <i class="fas fa-file-pdf me-2"></i>Exporter
+                    </a>
                     <a href="{{ path('app_utilisateur_edit', {'id': utilisateur.id}) }}" class="btn btn-warning">
                         <i class="fas fa-edit me-2"></i>Modifier
                     </a>

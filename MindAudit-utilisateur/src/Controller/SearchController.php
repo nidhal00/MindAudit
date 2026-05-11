@@ -15,6 +15,11 @@ class SearchController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function search(Request $request, UtilisateurRepository $userRepo): JsonResponse
     {
+        // Libérer le verrou sur la session pour ne pas bloquer les autres requêtes
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         $query = $request->query->get('q', '');
         
         if (strlen($query) < 2) {

@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Journal de Connexion - MindAudit{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-shield-alt me-2"></i>Journal de Connexion (Sécurité)</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Les 100 dernières tentatives de connexion</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Heure</th>
+                        <th>Email tenté</th>
+                        <th>Utilisateur (si connu)</th>
+                        <th>Adresse IP</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in historiques %}
+                    <tr>
+                        <td>
+                            <i class="far fa-clock text-muted me-1"></i>
+                            <strong>{{ log.dateTentative|date('d/m/Y') }}</strong> à {{ log.dateTentative|date('H:i:s') }}
+                        </td>
+                        <td>{{ log.emailTente }}</td>
+                        <td>
+                            {% if log.utilisateur %}
+                                <a href="{{ path('app_utilisateur_show', {'id': log.utilisateur.id}) }}" class="text-decoration-none fw-bold">
+                                    {{ log.utilisateur.nomComplet }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted fst-italic">Non trouvé</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary text-white">{{ log.ipAddress }}</span>
+                        </td>
+                        <td>
+                            {% if log.statut == 'SUCCES' %}
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Succès</span>
+                            {% else %}
+                                <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Échec</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <form method="post" action="{{ path('app_historique_delete_row', {'id': log.id}) }}" style="display: inline-block;" onsubmit="return confirm('Supprimer cette ligne ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_row_' ~ log.id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer la ligne">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="fas fa-history fa-3x mb-3 d-block text-gray-300"></i>
+                            Aucun historique de connexion pour le moment.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

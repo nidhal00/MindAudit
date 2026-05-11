@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil Utilisateur - {{ utilisateur.nomComplet }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #5dade2;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .header p {
+            color: #7f8c8d;
+            margin: 5px 0 0 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            width: 30%;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .bg-success { background-color: #28a745; }
+        .bg-danger { background-color: #dc3545; }
+        .bg-info { background-color: #17a2b8; }
+        .bg-secondary { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Fiche Utilisateur</h1>
+        <p>Généré le {{ "now"|date("d/m/Y à H:i") }}</p>
+    </div>
+
+    <h3>Informations Personnelles</h3>
+    <table>
+        <tr>
+            <th>ID Système</th>
+            <td>{{ utilisateur.id }}</td>
+        </tr>
+        <tr>
+            <th>Nom Complet</th>
+            <td><strong>{{ utilisateur.nomComplet }}</strong></td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ utilisateur.email }}</td>
+        </tr>
+        <tr>
+            <th>Rôle</th>
+            <td>
+                {% if utilisateur.role %}
+                    <span class="badge bg-info">{{ utilisateur.role.nom }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">Aucun rôle</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Statut du compte</th>
+            <td>
+                {% if utilisateur.actif %}
+                    <span class="badge bg-success">Actif</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactif</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Inscrit le</th>
+            <td>{{ utilisateur.createdAt ? utilisateur.createdAt|date('d/m/Y') : 'Inconnu' }}</td>
+        </tr>
+    </table>
+
+    {% if utilisateur.role and utilisateur.role.permissions %}
+    <h3>Permissions Accordées</h3>
+    <ul>
+        {% for permission in utilisateur.role.permissions %}
+            <li>{{ permission }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+</body>
+</html>

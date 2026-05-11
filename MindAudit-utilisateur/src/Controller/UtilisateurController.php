@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[Route('/utilisateur')]
 final class UtilisateurController extends AbstractController
@@ -73,6 +75,34 @@ final class UtilisateurController extends AbstractController
     {
         return $this->render('utilisateur/show.html.twig', [
             'utilisateur' => $utilisateur,
+        ]);
+    }
+
+    #[Route('/{id}/export', name: 'app_utilisateur_export', methods: ['GET'])]
+    public function export(Utilisateur $utilisateur): Response
+    {
+        // Configure Dompdf
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->setIsHtml5ParserEnabled(true);
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        $dompdf = new Dompdf($pdfOptions);
+
+        // Render the twig view to HTML
+        $html = $this->renderView('utilisateur/pdf.html.twig', [
+            'utilisateur' => $utilisateur
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+
+        return new Response($output, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="Profil_'.$utilisateur->getNom().'.pdf"'
         ]);
     }
 

@@ -156,6 +156,14 @@
                     <span>Rôles</span>
                 </a>
             </li>
+
+            <!-- Nav Item - Journal de Connexion -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_historique_index') }}">
+                    <i class="fas fa-fw fa-shield-alt"></i>
+                    <span>Journal de Connexion</span>
+                </a>
+            </li>
             {% else %}
             <li class="nav-item active">
                 <a class="nav-link" href="{{ path('app_user_space') }}">

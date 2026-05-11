@@ -25,19 +25,31 @@ class OAuthController extends AbstractController
     {
         $provider = $client->getOAuth2Provider();
         
-        // On utilise un client Guzzle fixe et léger
-        $provider->setHttpClient(new Client(['verify' => false, 'timeout' => 10]));
+        // On utilise un client Guzzle fixe et léger pour éviter les erreurs SSL sur XAMPP
+        $provider->setHttpClient(new Client([
+            'verify' => false, 
+            'timeout' => 10,
+            'curl' => [
+                CURLOPT_SSL_VERIFYPEER => false, 
+                CURLOPT_SSL_VERIFYHOST => false
+            ]
+        ]));
 
-        // Forcer la récupération de l'email pour Facebook
-        if (get_class($provider) === 'League\OAuth2\Client\Provider\Facebook') {
+        // Forcer les champs pour Facebook et s'assurer que l'email est demandé
+        if ($provider instanceof \League\OAuth2\Client\Provider\Facebook) {
             try {
+                // S'assurer que la version du graph est correcte (v18.0 est celle dans la config)
                 $refl = new \ReflectionObject($provider);
+                
+                // Forcer les champs du Graph API
                 if ($refl->hasProperty('graphApiFields')) {
                     $prop = $refl->getProperty('graphApiFields');
                     $prop->setAccessible(true);
                     $prop->setValue($provider, ['id', 'name', 'email', 'first_name', 'last_name', 'picture']);
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                // Erreur non bloquante
+            }
         }
     }
 
@@ -102,15 +114,20 @@ class OAuthController extends AbstractController
     }
 
     #[Route('/connect/facebook', name: 'connect_facebook')]
-    public function connectFacebook(ClientRegistry $clientRegistry, Request $request): Response
+    public function connectFacebook(ClientRegistry $clientRegistry): Response
     {
-        $client = $clientRegistry->getClient('facebook');
-        $this->applyOAuthFix($client, $request, 'connect_facebook_check');
-        
-        // On ajoute 'auth_type' => 'rerequest' pour forcer Facebook à redemander l'email
-        return $client->redirect(['public_profile', 'email'], [
-            'auth_type' => 'rerequest'
-        ]);
+        try {
+            /** @var \KnpU\OAuth2ClientBundle\Client\Provider\FacebookClient $client */
+            $client = $clientRegistry->getClient('facebook');
+            
+            // On force les scopes et on s'assure que le client est bien configuré
+            return $client->redirect(['email', 'public_profile'], [
+                'auth_type' => 'rerequest'
+            ]);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur d\'initialisation Facebook : ' . $e->getMessage());
+            return $this->redirectToRoute('app_login');
+        }
     }
 
     #[Route('/connect/facebook/check', name: 'connect_facebook_check')]

@@ -27,6 +27,11 @@ class NotificationController extends AbstractController
     #[Route('/unread-count', name: 'app_notifications_unread_count')]
     public function unreadCount(NotificationRepository $repo): JsonResponse
     {
+        // Libérer le verrou sur la session pour ne pas bloquer les autres requêtes
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         $user = $this->getUser();
         $count = $repo->countUnread($user);
         return $this->json(['count' => $count]);
@@ -35,6 +40,11 @@ class NotificationController extends AbstractController
     #[Route('/latest', name: 'app_notifications_latest')]
     public function latest(NotificationRepository $repo): JsonResponse
     {
+        // Libérer le verrou sur la session pour ne pas bloquer les autres requêtes
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         $user = $this->getUser();
         $notifications = $repo->findLatestForUser($user, 5);
         
